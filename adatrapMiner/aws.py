@@ -19,7 +19,6 @@ class AWSSession:
         outfile = open("ec2-keypair.pem", "w")
         key_pair = ec2.create_key_pair(KeyName="ec2-keypair")
         key_pair_out = str(key_pair.key_material)
-        print(key_pair_out)
         outfile.write(key_pair_out)
 
     def create_ec2_instance(self):
