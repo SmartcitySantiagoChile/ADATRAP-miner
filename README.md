@@ -62,8 +62,37 @@ El usuario ha sido creado exitosamente, por lo que es importante guardar sus cre
 ![aws-paso-6](docs/img/6-id-secret-key.png)
 
 
-#### Creacióna de Key Pair
-
 ### .env
 
+Se debe crear un archivo .env en la raíz del proyecto el cual incluirá las credenciales y otra información en el siguiente formato:
+
+AWS_ACCESS_KEY_ID= Id de acceso creado en el paso anterior.
+AWS_SECRET_ACCESS_KEY= Clave de acceso creado en el paso anterior
+REGION_NAME= Región donde se ubicará la instancia EC2 (Ejemplo: us-east-2)
+AMI_ID= Id de la imagen a utilizar en la instancia EC2
+
+
+#### Creacióna de Key Pair
+
+Para la creación de instancias EC2 y el manejo de estas se requiere tener una **keypar** para poder acceder a las instancias creadas en python. Para esto el programa tiene un comando que permite la creación de un keypar dado los datos de usuario en el archivo .env.
+
+Este comando crea una keypar llamada **ec2-keypair**, la cual se registra en AWS y se almacena localmente en la raíz del proyecto.
+
+Para crear un keypar se debe ejecutar:
+
+    python3 adatrap_miner.py -c
+
+Si todo resulta correcto se obtendrá el siguiente mensaje:
+
+    INFO:__main__:¡Keypair creado exitosamente! El archivo ec2-keypair.pem se encuentra en la raíz del proyecto.
+
+En caso de que la keypar exista el programa arrojará un error:
+
+    ERROR:__main__:El keypair 'ec2-keypair' ya existe
+
+
+Ya habiendo sido creada la keypar, esta se encontrará disponible en el panel de administración EC2 de AWS:
+
+![keypar](docs/img/keypar.png)
+    
 
