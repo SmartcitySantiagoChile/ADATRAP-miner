@@ -3,8 +3,8 @@ import aws
 
 def main():
     session = aws.AWSSession()
-    command = ["echo", "hello world"]
-    session.submit_job("python-test", command)
+    status = session.create_ec2_instance()
+    print(status)
 
 
 if __name__ == "__main__":

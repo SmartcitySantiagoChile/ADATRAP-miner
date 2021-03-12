@@ -13,19 +13,22 @@ class AWSSession:
             aws_secret_access_key=config("AWS_SECRET_ACCESS_KEY"),
             region_name=config("REGION_NAME"),
         )
-        self.job_queue = config("JOB_QUEUE")
-        self.job_definition = config("JOB_DEFINITION")
-        self.client = self.session.client("batch")
 
-    def submit_job(self, job_name, command):
-        response = self.client.submit_job(
-            jobName=job_name,
-            jobQueue=self.job_queue,
-            jobDefinition=self.job_definition,
-            parameters={"name": job_name},
-            containerOverrides={
-                "command": command,
-            },
-            propagateTags=True,
+    def create_key_pair(self):
+        ec2 = self.session.resource("ec2")
+        outfile = open("ec2-keypair.pem", "w")
+        key_pair = ec2.create_key_pair(KeyName="ec2-keypair")
+        key_pair_out = str(key_pair.key_material)
+        print(key_pair_out)
+        outfile.write(key_pair_out)
+
+    def create_ec2_instance(self):
+        ec2 = self.session.resource("ec2")
+        instances = ec2.create_instances(
+            ImageId="ami-02f50d6aef81e691a",
+            MinCount=1,
+            MaxCount=2,
+            InstanceType="t2.micro",
+            KeyName="ec2-keypair",
         )
-        return response
+        return instances
