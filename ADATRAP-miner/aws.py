@@ -27,7 +27,7 @@ class AWSSession:
         instances = ec2.create_instances(
             ImageId="ami-02f50d6aef81e691a",
             MinCount=1,
-            MaxCount=2,
+            MaxCount=1,
             InstanceType="t2.micro",
             KeyName="ec2-keypair",
         )
