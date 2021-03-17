@@ -18,7 +18,7 @@ def main(argv):
 
     # Arguments and description
     parser = argparse.ArgumentParser(description="Script to execute ADATRAP")
-    parser.add_argument("date", help="date to execute adatrap", nargs="+")
+    parser.add_argument("date", help="date to execute adatrap")
 
     parser.add_argument(
         "-v", "--verbose", help="increase output verbosity", action="store_true"
@@ -27,10 +27,10 @@ def main(argv):
     date = args.date
     path = config("ADATRAP_PATH")
     logger.info(f"{date} {path}")
-    subprocess.run(["echo", os.path.join(path, "pvmts_dummy.exe")])
-    subprocess.run(["echo", os.path.join(path, f"{date}.par")])
     subprocess.run(
-        [os.path.join(path, "pvmts_dummy.exe"), os.path.join(path, f"{date}.par")]
+        [os.path.join(path, "pvmts_dummy.exe"), os.path.join(path, f"{date}.par")],
+        shell=True,
+        check=True,
     )
 
 
