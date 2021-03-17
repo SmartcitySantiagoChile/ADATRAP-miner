@@ -27,11 +27,11 @@ def main(argv):
     date = args.date
     path = config("ADATRAP_PATH")
     logger.info(f"{date} {path}")
+    subprocess.run(["echo", os.path.join(path, "pvmts_dummy.exe")])
+    subprocess.run(["echo", os.path.join(path, f"{date}.par")])
     subprocess.run(
         [os.path.join(path, "pvmts_dummy.exe"), os.path.join(path, f"{date}.par")]
     )
-    subprocess.run(["echo", os.path.join(path, "pvmts_dummy.exe")])
-    subprocess.run(["echo", os.path.join(path, f"{date}.par")])
 
 
 if __name__ == "__main__":
