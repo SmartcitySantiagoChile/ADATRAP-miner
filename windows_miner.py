@@ -26,7 +26,8 @@ def main(argv):
     date = args.date
     path = config("ADATRAP_PATH")
     logger.info(f"{date} {path}")
-    os.system(f"cmd /k {os.path.join(path, 'pvmts_dummy.exe')}  {date}.par ")
+    os.system(f"cmd /c {os.path.join(path, 'pvmts_dummy.exe')}  {date}.par ")
+    os.system(f"cmd /c echo {os.path.join(path, 'pvmts_dummy.exe')} ")
 
 
 if __name__ == "__main__":
