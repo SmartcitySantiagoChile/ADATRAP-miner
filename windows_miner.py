@@ -1,5 +1,6 @@
 import argparse
 import logging
+import os
 import sys
 
 from decouple import config
@@ -25,6 +26,7 @@ def main(argv):
     date = args.date
     path = config("ADATRAP_PATH")
     logger.info(f"{date} {path}")
+    os.system('cmd /k "date"')
 
 
 if __name__ == "__main__":
