@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 def main(argv):
     """
-    Script to manage EC2 instances and ADATRAP
+    Script to manage EC2 instances
     """
     logging.basicConfig(level=logging.INFO)
 
@@ -40,10 +40,11 @@ def main(argv):
             )
         except botocore.exceptions.ClientError:
             logger.error("El keypair 'ec2-keypair' ya existe.")
-    else:
-        session = aws.AWSSession()
-        status = session.create_ec2_instance()
-        print(status)
+    session = aws.AWSSession()
+    # status = session.create_ec2_instance()
+    status = session.run_ec2_instance()
+    instance_id = status["Instances"][0]["InstanceId"]
+    logger.info(f"Instancia creada con id: {instance_id}")
 
 
 if __name__ == "__main__":
