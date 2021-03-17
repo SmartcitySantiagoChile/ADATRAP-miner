@@ -31,3 +31,29 @@ class AWSSession:
             KeyName="ec2-keypair",
         )
         return instances
+
+    def run_ec2_instance(self):
+        ec2 = self.session.client("ec2")
+        script = """
+        <powershell>
+        echo "Hello world"
+        </powershell>
+        """
+        instances = ec2.run_instances(
+            ImageId="ami-02f50d6aef81e691a",
+            MinCount=1,
+            MaxCount=1,
+            InstanceType="t2.micro",
+            KeyName="ec2-keypair",
+            UserData=script,
+            Monitoring={"Enabled": True},
+        )
+        return instances
+
+    def execute_commands(self, commands, instance_id):
+        res = self.session.client("ssm").send_command(
+            DocumentName="AWS-RunShellScript",
+            Parameters={"commands": commands},
+            InstanceIds=[instance_id],
+        )
+        return res
