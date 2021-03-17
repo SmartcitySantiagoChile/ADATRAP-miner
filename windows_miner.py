@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import subprocess
 import sys
 
 from decouple import config
@@ -26,8 +27,11 @@ def main(argv):
     date = args.date
     path = config("ADATRAP_PATH")
     logger.info(f"{date} {path}")
-    os.system(f"cmd /c {os.path.join(path, 'pvmts_dummy.exe')}  {date}.par ")
-    os.system(f"cmd /c echo {os.path.join(path, 'pvmts_dummy.exe')} ")
+    subprocess.run(
+        [os.path.join(path, "pvmts_dummy.exe"), os.path.join(path, f"{date}.par")]
+    )
+    subprocess.run(["echo", os.path.join(path, "pvmts_dummy.exe")])
+    subprocess.run(["echo", os.path.join(path, f"{date}.par")])
 
 
 if __name__ == "__main__":
