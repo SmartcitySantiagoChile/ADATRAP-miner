@@ -39,11 +39,10 @@ def main(argv):
     session.send_log_event(instance_id, message)
 
     # Run ADATRAP
-    subprocess.run(
+    res = subprocess.run(
         [os.path.join(path, "pvmts_dummy.exe"), os.path.join(path, f"{date}.par")],
-        shell=True,
-        check=True,
     )
+    print(res.stdout)
 
 
 if __name__ == "__main__":
