@@ -38,11 +38,28 @@ def main(argv):
     logger.info(message)
     session.send_log_event(instance_id, message)
 
+    # Initialization of ADATRAP
+    message = "Iniciando proceso ADATRAP..."
+    logger.info(message)
+    session.send_log_event(instance_id, message)
+
     # Run ADATRAP
     res = subprocess.run(
         [os.path.join(path, "pvmts_dummy.exe"), os.path.join(path, f"{date}.par")],
+        capture_output=True,
     )
-    print(res.stdout)
+    # Send ADATRAP Log
+    res_message = res.stdout.decode("utf-8")
+    if res_message:
+        logger.info(res_message)
+        session.send_log_event(instance_id, res_message)
+    error_message = res.stderr.decode("utf-8")
+    if error_message:
+        logger.error(error_message)
+        session.send_log_event(instance_id, error_message)
+    message = "Proceso ADATRAP finalizado."
+    logger.info(message)
+    session.send_log_event(instance_id, message)
 
 
 if __name__ == "__main__":
