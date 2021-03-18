@@ -5,6 +5,7 @@ import subprocess
 import sys
 
 from decouple import config
+from ec2_metadata import ec2_metadata
 
 from adatrapMiner import aws
 
@@ -31,7 +32,7 @@ def main(argv):
 
     # Initial Log
     session = aws.AWSSession()
-    instance_id = session.get_instance_id()
+    instance_id = ec2_metadata.instance_id
     logger.info(instance_id)
 
     message = "Instancia inicializada."
