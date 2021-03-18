@@ -22,17 +22,17 @@ def main(argv):
     # Arguments and description
     parser = argparse.ArgumentParser(description="Script to execute ADATRAP")
     parser.add_argument("date", help="Date to execute adatrap")
-    parser.add_argument("id", help="EC2 Instance ID")
     parser.add_argument(
         "-v", "--verbose", help="increase output verbosity", action="store_true"
     )
     args = parser.parse_args(argv[1:])
     date = args.date
-    instance_id = args.id
     path = config("ADATRAP_PATH")
 
     # Initial Log
     session = aws.AWSSession()
+    instance_id = session.get_instance_id()
+    logger.info(instance_id)
 
     message = "Instancia inicializada."
     logger.info(message)
