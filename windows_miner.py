@@ -33,7 +33,6 @@ def main(argv):
     # Initial Log
     session = aws.AWSSession()
     instance_id = ec2_metadata.instance_id
-    logger.info(instance_id)
 
     message = "Instancia inicializada."
     logger.info(message)
