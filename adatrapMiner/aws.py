@@ -43,19 +43,23 @@ class AWSSession:
         )
         return instances
 
-    def run_ec2_instance(self):
+    def run_ec2_instance(self, date):
         """
         Create an EC2 instance and next run a given command
         :return: instance id
         """
         ec2 = self.session.client("ec2")
-        script = """
+        script = (
+            """
         <powershell>
-        echo "Hello world"
+        python C:/Users/Administrator/ADATRAP/ADATRAP-miner/windows_miner.py"""
+            + date
+            + """
         </powershell>
         """
+        )
         instances = ec2.run_instances(
-            ImageId="ami-02f50d6aef81e691a",
+            ImageId=config("AMI_ID"),
             MinCount=1,
             MaxCount=1,
             InstanceType="t2.micro",
@@ -122,3 +126,21 @@ class AWSSession:
             .get("uploadSequenceToken")
         )
         return token
+
+    def create_log_group(self, group_name, retention=7):
+        logs = self.session.client("logs")
+        response = logs.create_log_group(
+            logGroupName=group_name,
+        )
+        logs.put_resource_policy(policyName="string", policyDocument="string")
+        return response
+
+    def get_instance_id(self):
+        import socket
+
+        hostname = socket.gethostname()
+        session = self.session.client("ec2")
+        for reservation in session.describe_instances()["Reservations"]:
+            for instance in reservation["Instances"]:
+                if instance["PrivateDnsName"].startswith(hostname):
+                    return instance["InstanceId"]
