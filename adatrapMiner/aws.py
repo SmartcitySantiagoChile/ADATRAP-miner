@@ -50,9 +50,8 @@ class AWSSession:
         """
         ec2 = self.session.client("ec2")
         script = (
-            """
-        <powershell>
-        python C:/Users/Administrator/ADATRAP/ADATRAP-miner/windows_miner.py"""
+            """<powershell>
+         python C:/Users/Administrator/ADATRAP/ADATRAP-miner/windows_miner.py"""
             + date
             + """
         </powershell>

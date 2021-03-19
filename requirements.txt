@@ -2,4 +2,4 @@ boto3==1.17.31
 python-decouple==3.4
 pre-commit==2.11.1
 botocore==1.20.31
-ec2metadata==2.0.1
+ec2_metadata==2.3.0

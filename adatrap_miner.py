@@ -28,9 +28,11 @@ def main(argv):
     parser.add_argument(
         "-v", "--verbose", help="increase output verbosity", action="store_true"
     )
+    parser.add_argument("date", help="Date to execute adatrap")
 
     args = parser.parse_args(argv[1:])
 
+    date = args.date
     # Create Key Par
     session = aws.AWSSession()
     if args.create_key_par:
@@ -45,7 +47,7 @@ def main(argv):
             session.send_log_event(general_log_stream, message)
     else:
         # Create EC2 instance
-        status = session.run_ec2_instance()
+        status = session.run_ec2_instance(date)
         instance_id = status["Instances"][0]["InstanceId"]
         message = f"Instancia creada con id: {instance_id}"
         logger.info(message)

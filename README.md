@@ -61,6 +61,15 @@ En esta sección se debe revisar que todos los datos estén correctos y avanzar 
 El usuario ha sido creado exitosamente, por lo que es importante guardar sus credenciales en la sección **download.csv**. Ambas credenciales **Access key ID** y **Secret access key** serán utilizadas para la configuración del proyecto.
 ![aws-paso-6](docs/img/6-id-secret-key.png)
 
+### Logs
+
+Para guardar registro de los logs se requiere la creación de un Log Group y un Log Stream. 
+Sus nombres serán utilizados más adelante para mantener registro de las instancias EC2 a crear y el funcionamiento
+general del software.
+
+#### Crear Log Group
+
+Se debe acceder a la consola de AWS en la aplicación [CloudWatch](https://us-east-2.console.aws.amazon.com/cloudwatch/home)
 
 ### .env
 
