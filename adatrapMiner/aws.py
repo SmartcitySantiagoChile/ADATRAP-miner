@@ -49,23 +49,18 @@ class AWSSession:
         :return: instance id
         """
         ec2 = self.session.client("ec2")
-        script = (
-            """<powershell>
-         python C:/Users/Administrator/ADATRAP/ADATRAP-miner/windows_miner.py"""
-            + date
-            + """
-        </powershell>
-        """
-        )
-        instances = ec2.run_instances(
-            ImageId=config("AMI_ID"),
-            MinCount=1,
-            MaxCount=1,
-            InstanceType="t2.micro",
-            KeyName="ec2-keypair",
-            UserData=script,
-            Monitoring={"Enabled": True},
-        )
+        with open('windows_script') as f:
+            lines = f.read()
+            script = lines
+            instances = ec2.run_instances(
+                ImageId=config("AMI_ID"),
+                MinCount=1,
+                MaxCount=1,
+                InstanceType="t2.micro",
+                KeyName="ec2-keypair",
+                UserData=script,
+                Monitoring={"Enabled": True},
+            )
         return instances
 
     def execute_commands(self, commands, instance_id):
