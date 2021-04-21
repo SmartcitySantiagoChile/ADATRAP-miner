@@ -83,6 +83,9 @@ REGION_NAME= Región donde se ubicará la instancia EC2 (Ejemplo: us-east-2)
 
 AMI_ID= Id de la imagen a utilizar en la instancia EC2
 
+GENERAL_LOG_STREAM= Id para el log general
+
+
 
 ### Creación de Key Pair
 
