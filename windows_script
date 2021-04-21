@@ -1,0 +1,21 @@
+<powershell>
+$script = New-Object Net.WebClient
+$script | Get-Member
+$script.DownloadString("https://chocolatey.org/install.ps1")
+iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex
+refreshenv
+choco upgrade chocolatey
+refreshenv
+choco install -y python --version=3.8.0
+refreshenv
+C:\Python38\python.exe -V
+C:\Python38\python.exe -m pip install --upgrade pip
+choco install -y git
+cd C:\
+."C:\Program Files\Git\bin\git.exe" clone https://github.com/SmartcitySantiagoChile/ADATRAP-miner.git
+cd C:\ADATRAP-miner
+."C:\Program Files\Git\bin\git.exe" checkout --track origin/develop
+C:\Python38\python.exe -m pip install -r requirements.txt
+C:\Python38\python.exe windows_miner.py
+echo "Instalaciones correctas"
+</powershell>
