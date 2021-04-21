@@ -4,13 +4,11 @@ import os
 import subprocess
 import sys
 
-from decouple import config
 from ec2_metadata import ec2_metadata
 
 from adatrapMiner import aws
 
 logger = logging.getLogger(__name__)
-general_log_stream = config("GENERAL_LOG_STREAM")
 
 
 def main(argv):
@@ -23,12 +21,14 @@ def main(argv):
     # Arguments and description
     parser = argparse.ArgumentParser(description="Script to execute ADATRAP")
     parser.add_argument("date", help="Date to execute adatrap")
+    parser.add_argument("general_log_stream", help="Name of log stream to save general data")
     parser.add_argument(
         "-v", "--verbose", help="increase output verbosity", action="store_true"
     )
     args = parser.parse_args(argv[1:])
     date = args.date
-    path = config("ADATRAP_PATH")
+    general_log_stream = args.general_log_stream
+    #path = config("ADATRAP_PATH") TODO: add adatrap path to windows script
 
     # Initial Log
     session = aws.AWSSession()
@@ -44,22 +44,22 @@ def main(argv):
     session.send_log_event(instance_id, message)
 
     # Run ADATRAP
-    res = subprocess.run(
-        [os.path.join(path, "pvmts_dummy.exe"), os.path.join(path, f"{date}.par")],
-        capture_output=True,
-    )
+    # res = subprocess.run(
+    #     [os.path.join(path, "pvmts_dummy.exe"), os.path.join(path, f"{date}.par")],
+    #     capture_output=True,
+    # )
     # Send ADATRAP Log
-    res_message = res.stdout.decode("utf-8")
-    if res_message:
-        logger.info(res_message)
-        session.send_log_event(instance_id, res_message)
-    error_message = res.stderr.decode("utf-8")
-    if error_message:
-        logger.error(error_message)
-        session.send_log_event(instance_id, error_message)
-    message = "Proceso ADATRAP finalizado."
-    logger.info(message)
-    session.send_log_event(instance_id, message)
+    # res_message = res.stdout.decode("utf-8")
+    # if res_message:
+    #     logger.info(res_message)
+    #     session.send_log_event(instance_id, res_message)
+    # error_message = res.stderr.decode("utf-8")
+    # if error_message:
+    #     logger.error(error_message)
+    #     session.send_log_event(instance_id, error_message)
+    # message = "Proceso ADATRAP finalizado."
+    # logger.info(message)
+    # session.send_log_event(instance_id, message)
 
 
 if __name__ == "__main__":
