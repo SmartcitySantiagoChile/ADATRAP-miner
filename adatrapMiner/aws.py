@@ -43,7 +43,7 @@ class AWSSession:
         )
         return instances
 
-    def run_ec2_instance(self, date):
+    def run_ec2_instance(self, date, general_log_stream):
         """
         Create an EC2 instance and next run a given command
         :return: instance id
@@ -51,6 +51,7 @@ class AWSSession:
         ec2 = self.session.client("ec2")
         with open('windows_script') as f:
             lines = f.read()
+            lines = lines.replace('EC2DATE', date).replace('GENLOGSTREAM', general_log_stream)
             script = lines
             instances = ec2.run_instances(
                 ImageId=config("AMI_ID"),
@@ -116,8 +117,8 @@ class AWSSession:
                 logGroupName=self.log_group,
                 logStreamNamePrefix=log_stream_name,
             )
-            .get("logStreams")[0]
-            .get("uploadSequenceToken")
+                .get("logStreams")[0]
+                .get("uploadSequenceToken")
         )
         return token
 
