@@ -43,7 +43,7 @@ class AWSSession:
         )
         return instances
 
-    def run_ec2_instance(self, date, general_log_stream):
+    def run_ec2_instance(self, date):
         """
         Create an EC2 instance and next run a given command
         :return: instance id
@@ -52,7 +52,7 @@ class AWSSession:
         env_file = self.read_env_file()
         with open('windows_script') as f:
             lines = f.read()
-            lines = lines.replace('EC2DATE', date).replace('GENLOGSTREAM', general_log_stream).replace("ENV_DATA",
+            lines = lines.replace('EC2DATE', date).replace("ENV_DATA",
                                                                                               env_file)
             script = lines
             instances = ec2.run_instances(
