@@ -49,9 +49,11 @@ class AWSSession:
         :return: instance id
         """
         ec2 = self.session.client("ec2")
+        env_file = self.read_env_file()
         with open('windows_script') as f:
             lines = f.read()
-            lines = lines.replace('EC2DATE', date).replace('GENLOGSTREAM', general_log_stream)
+            lines = lines.replace('EC2DATE', date).replace('GENLOGSTREAM', general_log_stream).replace("ENV_DATA",
+                                                                                              env_file)
             script = lines
             instances = ec2.run_instances(
                 ImageId=config("AMI_ID"),
@@ -139,3 +141,9 @@ class AWSSession:
             for instance in reservation["Instances"]:
                 if instance["PrivateDnsName"].startswith(hostname):
                     return instance["InstanceId"]
+
+    def read_env_file(self):
+        path = ".env"  # TODO: improve this
+        with open(path) as f:
+            lines = f.read()
+        return lines
