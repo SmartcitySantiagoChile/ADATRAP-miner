@@ -18,7 +18,8 @@ cd C:\
 cd C:\ADATRAP-miner
 ."C:\Program Files\Git\bin\git.exe" checkout --track origin/develop
 C:\Python38\python.exe -m pip install -r requirements.txt
+$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
 echo $env_data > .env
-C:\Python38\python.exe windows_miner.py $ec2_date $general_log_stream
+C:\Python38\python.exe windows_miner.py $ec2_date
 echo "Instalaciones correctas"
 </powershell>
