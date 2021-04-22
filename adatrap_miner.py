@@ -47,7 +47,7 @@ def main(argv):
             session.send_log_event(general_log_stream, message)
     else:
         # Create EC2 instance
-        status = session.run_ec2_instance(date, general_log_stream)
+        status = session.run_ec2_instance(date)
         instance_id = status["Instances"][0]["InstanceId"]
         message = f"Instancia creada con id: {instance_id}"
         logger.info(message)
