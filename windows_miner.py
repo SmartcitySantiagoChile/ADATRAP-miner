@@ -58,15 +58,26 @@ def main(argv):
     send_log_message("Iniciando proceso ADATRAP...")
 
     # Download files TODO
+    send_log_message("Descargando datos para ADATRAP...")
+
+    # Download gps
+    send_log_message("Descargando datos de gps...")
+    gps_bucket = config('GPS_BUCKET_NAME')
+    if not session.check_bucket_exists(gps_bucket):
+        send_log_message(f"'Bucket \'{gps_bucket}\' does not exist", error=True)
+        exit(1)
+    available_gps_days = [files['name'] for files in session.retrieve_obj_list(gps_bucket)]
+    gps_file = [day for day in available_gps_days if date in day]
+    print(gps_file)
 
     # Download executable
     send_log_message("Descargando ejecutable ADATRAP...")
-    bucket_name = config('EXECUTABLES_BUCKET')
-    if not session.check_bucket_exists(bucket_name):
-        send_log_message(f"'Bucket \'{bucket_name}\' does not exist", error=True)
+    executable_bucket = config('EXECUTABLES_BUCKET')
+    if not session.check_bucket_exists(executable_bucket):
+        send_log_message(f"'Bucket \'{executable_bucket}\' does not exist", error=True)
         exit(1)
     try:
-        session.download_object_from_bucket(executable_adatrap, bucket_name, executable_adatrap)
+        session.download_object_from_bucket(executable_adatrap, executable_bucket, executable_adatrap)
     except ClientError as e:
         send_log_message(e, error=True)
         exit(1)
@@ -75,7 +86,7 @@ def main(argv):
     # Download config file
     send_log_message("Descargando archivo de configuración ADATRAP...")
     try:
-        session.download_object_from_bucket(config_file_adatrap, bucket_name, config_file_adatrap)
+        session.download_object_from_bucket(config_file_adatrap, executable_bucket, config_file_adatrap)
     except ClientError as e:
         send_log_message(e, error=True)
         exit(1)
@@ -92,18 +103,19 @@ def main(argv):
             f.write(lines)
 
     # Run ADATRAP
-    res = subprocess.run(
-        ["pivots_dummy.exe", f"{date}.par"],
-        capture_output=True,
-    )
-    # Send ADATRAP Log
-    res_message = res.stdout.decode("utf-8")
-    if res_message:
-        send_log_message(res_message)
-    error_message = res.stderr.decode("utf-8")
-    if error_message:
-        send_log_message(error_message)
-    send_log_message("Proceso ADATRAP finalizado.")
+    if not debug:
+        res = subprocess.run(
+            [executable_adatrap, f"{date}.par"],
+            capture_output=True,
+        )
+        # Send ADATRAP Log
+        res_message = res.stdout.decode("utf-8")
+        if res_message:
+            send_log_message(res_message)
+        error_message = res.stderr.decode("utf-8")
+        if error_message:
+            send_log_message(error_message)
+        send_log_message("Proceso ADATRAP finalizado.")
 
 
 if __name__ == "__main__":
