@@ -11,7 +11,7 @@ from adatrapMiner import aws
 logger = logging.getLogger(__name__)
 general_log_stream: str = config("GENERAL_LOG_STREAM")
 executable_adatrap: str = 'pvmts_dummy.exe'
-
+config_file_adatrap: str = 'configuration.par'
 
 def main(argv):
     """
@@ -26,34 +26,51 @@ def main(argv):
     parser.add_argument(
         "-v", "--verbose", help="increase output verbosity", action="store_true"
     )
+    parser.add_argument("-d", "--debug", help="Debug mode to test functions without instance", action="store_true" )
     args = parser.parse_args(argv[1:])
     date = args.date
+    debug = args.debug
     path = config("ADATRAP_PATH")
 
     # Initial Log
     session = aws.AWSSession()
-    instance_id = ec2_metadata.instance_id
+    if not debug:
+        instance_id = ec2_metadata.instance_id
 
-    def send_log_message(message):
-        logger.info(message)
-        session.send_log_event(instance_id, message)
+    def send_log_message(message, error=False):
+        if not debug:
+            if not error:
+                logger.info(message)
+            else:
+                logger.error(message)
+            session.send_log_event(instance_id, message)
 
     send_log_message("Instancia inicializada.")
 
-    # # Initialization of ADATRAP
+    # Initialization of ADATRAP
     send_log_message("Iniciando proceso ADATRAP...")
 
-    # # Download executable
+    # Download executable
     send_log_message("Descargando ejecutable ADATRAP...")
     bucket_name = config('EXECUTABLES_BUCKET')
     if not session.check_bucket_exists(bucket_name):
-        send_log_message(f"'Bucket \'{bucket_name}\' does not exist")
+        send_log_message(f"'Bucket \'{bucket_name}\' does not exist", error=True)
         exit(1)
     try:
         session.download_object_from_bucket(executable_adatrap, bucket_name, executable_adatrap)
     except ClientError as e:
-        send_log_message(e)
+        send_log_message(e, error=True)
+        exit(1)
     send_log_message('Ejecutable ADATRAP descargado.')
+
+    # Download config file
+    send_log_message("Descargando archivo de configuración ADATRAP...")
+    try:
+        session.download_object_from_bucket(config_file_adatrap, bucket_name, config_file_adatrap)
+    except ClientError as e:
+        send_log_message(e, error=True)
+        exit(1)
+    send_log_message('Archivo de configuración ADATRAP descargado.')
 
     # # Run ADATRAP
     # res = subprocess.run(
