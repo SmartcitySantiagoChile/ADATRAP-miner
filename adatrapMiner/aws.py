@@ -1,6 +1,7 @@
 import time
 
 import boto3
+import botocore
 from decouple import config
 
 
@@ -28,20 +29,6 @@ class AWSSession:
         key_pair_out = str(key_pair.key_material)
         outfile.write(key_pair_out)
 
-    def create_ec2_instance(self):
-        """
-        Create a EC2 instance
-        :return: instance id
-        """
-        ec2 = self.session.resource("ec2")
-        instances = ec2.create_instances(
-            ImageId="ami-02f50d6aef81e691a",
-            MinCount=1,
-            MaxCount=1,
-            InstanceType="t2.micro",
-            KeyName="ec2-keypair",
-        )
-        return instances
 
     def run_ec2_instance(self, date):
         """
@@ -49,7 +36,7 @@ class AWSSession:
         :return: instance id
         """
         ec2 = self.session.client("ec2")
-        env_file = self.read_env_file()
+        env_file = self._read_env_file()
         with open('windows_script') as f:
             lines = f.read()
             lines = lines.replace('EC2DATE', date).replace("ENV_DATA",
@@ -87,7 +74,7 @@ class AWSSession:
         Send a Log Event to a Log Stream
         :param log_stream_name: name of the Log Stream
         :param message: message to be logged
-        :return: log event response
+          :return: log event response
         """
         token = self.get_last_token_event(log_stream_name)
         logs = self.session.client("logs")
@@ -142,8 +129,57 @@ class AWSSession:
                 if instance["PrivateDnsName"].startswith(hostname):
                     return instance["InstanceId"]
 
-    def read_env_file(self):
+    def _read_env_file(self):
         path = ".env"  # TODO: improve this
         with open(path) as f:
             lines = f.read()
         return lines
+
+    def retrieve_obj_list(self, bucket_name):
+        s3 = self.session.resource('s3')
+        bucket = s3.Bucket(bucket_name)
+
+        obj_list = []
+        for obj in bucket.objects.all():
+            size_in_mb = float(obj.size) / (1024 ** 2)
+            url = self._build_url(obj.key, bucket_name)
+            obj_list.append(dict(name=obj.key, size=size_in_mb, last_modified=obj.last_modified, url=url))
+
+        return obj_list
+
+    def _build_url(self, key, bucket_name):
+        return ''.join(['https://s3.amazonaws.com/', bucket_name, '/', urllib.parse.quote(key)])
+
+    def check_bucket_exists(self, bucket_name):
+        s3 = self.session.resource('s3')
+        try:
+            s3.meta.client.head_bucket(Bucket=bucket_name)
+            return True
+        except botocore.exceptions.ClientError as e:
+            # If a client error is thrown, then check that it was a 404 error.
+            # If it was a 404 error, then the bucket does not exist.
+            error_code = int(e.response['Error']['Code'])
+            if error_code == 403:
+                raise ValueError("Private Bucket. Forbidden Access!")
+            elif error_code == 404:
+                return False
+
+    def check_file_exists(self, bucket_name, key):
+        s3 = self.session.resource('s3')
+        try:
+            s3.Object(bucket_name, key).load()
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == "404":
+                # The object does not exist.
+                return False
+            else:
+                # Something else has gone wrong.
+                raise ValueError(e.response['Error'])
+        else:
+            # The object exists.
+            return True
+
+    def download_object_from_bucket(self, obj_key, bucket_name, file_path):
+        s3 = self.session.resource('s3')
+        bucket = s3.Bucket(bucket_name)
+        bucket.download_file(obj_key, file_path)
