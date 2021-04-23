@@ -1,5 +1,6 @@
 import argparse
 import logging
+import subprocess
 import sys
 
 from botocore.exceptions import ClientError
@@ -12,6 +13,12 @@ logger = logging.getLogger(__name__)
 general_log_stream: str = config("GENERAL_LOG_STREAM")
 executable_adatrap: str = 'pvmts_dummy.exe'
 config_file_adatrap: str = 'configuration.par'
+config_file_replacements: dict = {
+    'op_path': 'op_path_replacement',
+    'day_type': 'LABORAL',
+    'service_detail_file': 'Diccionario-DetalleServicioZP_20201116_20201130v2.csv',
+    'date': 'date'
+}
 
 def main(argv):
     """
@@ -50,6 +57,8 @@ def main(argv):
     # Initialization of ADATRAP
     send_log_message("Iniciando proceso ADATRAP...")
 
+    # Download files TODO
+
     # Download executable
     send_log_message("Descargando ejecutable ADATRAP...")
     bucket_name = config('EXECUTABLES_BUCKET')
@@ -72,19 +81,29 @@ def main(argv):
         exit(1)
     send_log_message('Archivo de configuración ADATRAP descargado.')
 
-    # # Run ADATRAP
-    # res = subprocess.run(
-    #     ["pvmts_dummy.exe", f"{date}.par"],
-    #     capture_output=True,
-    # )
-    # # Send ADATRAP Log
-    # res_message = res.stdout.decode("utf-8")
-    # if res_message:
-    #     send_log_message(res_message)
-    # error_message = res.stderr.decode("utf-8")
-    # if error_message:
-    #     send_log_message(error_message)
-    # send_log_message("Proceso ADATRAP finalizado.")
+    # Process config file
+    config_file_replacements['date'] = date
+
+    with open(config_file_adatrap, "rt") as f:
+        lines = f.read()
+        for key, value in config_file_replacements.items():
+            lines = lines.replace(key, value)
+        with open(f"{date}.par", "wt") as f:
+            f.write(lines)
+
+    # Run ADATRAP
+    res = subprocess.run(
+        ["pivots_dummy.exe", f"{date}.par"],
+        capture_output=True,
+    )
+    # Send ADATRAP Log
+    res_message = res.stdout.decode("utf-8")
+    if res_message:
+        send_log_message(res_message)
+    error_message = res.stderr.decode("utf-8")
+    if error_message:
+        send_log_message(error_message)
+    send_log_message("Proceso ADATRAP finalizado.")
 
 
 if __name__ == "__main__":
