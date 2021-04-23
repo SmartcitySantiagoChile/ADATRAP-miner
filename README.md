@@ -40,7 +40,7 @@ Posteriormente se debe escribir un nombre de usuario en **User name**, marcar la
 ![aws-paso-2](docs/img/2-name-user.png)
 
 #### 3) Permisos de Usuario
-En esta sección se darán los permisos al usuario debe seleccionar la opción **Attach existing policies directly**. Posteriormente en el cuadro de búsqueda buscar **ec2fullaccess** y marcar la casilla **AmazonEC2FullAccess**
+En esta sección se darán los permisos al usuario debe seleccionar la opción **Attach existing policies directly**. Posteriormente en el cuadro de búsqueda buscar **ec2fullaccess** y marcar la casilla **AmazonEC2FullAccess** y también **S3**
 
 Finalmente se puede ir al siguiente paso **Next: Tags**.
 
@@ -87,7 +87,13 @@ GENERAL_LOG_STREAM= Id para el log general
 
 EXECUTABLES_BUCKET= Bucket donde se encuentra ejecutable ADATRAP    
 
+GPS_BUCKET_NAME= Bucket de gps
 
+OP_PROGRAM_BUCKET_NAME= Bucket de po
+
+FILE_196_BUCKET_NAME= Bucket de archivo 196
+
+TRANSACTION_BUCKET_NAME= Bucket de transacciones
 ### Creación de Key Pair
 
 Para la creación de instancias EC2 y el manejo de estas se requiere tener una **keypar** para poder acceder a las instancias creadas en python. Para esto el programa tiene un comando que permite la creación de un keypar dado los datos de usuario en el archivo .env.
