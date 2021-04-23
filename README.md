@@ -85,6 +85,7 @@ AMI_ID= Id de la imagen a utilizar en la instancia EC2
 
 GENERAL_LOG_STREAM= Id para el log general
 
+EXECUTABLES_BUCKET= Bucket donde se encuentra ejecutable ADATRAP    
 
 
 ### Creación de Key Pair
