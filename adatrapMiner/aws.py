@@ -1,4 +1,5 @@
 import time
+import urllib
 
 import boto3
 import botocore
@@ -183,3 +184,4 @@ class AWSSession:
         s3 = self.session.resource('s3')
         bucket = s3.Bucket(bucket_name)
         bucket.download_file(obj_key, file_path)
+
