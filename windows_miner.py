@@ -20,6 +20,7 @@ config_file_replacements: dict = {
     'date': 'date'
 }
 
+
 def main(argv):
     """
     Script to execute ADATRAP
@@ -33,7 +34,7 @@ def main(argv):
     parser.add_argument(
         "-v", "--verbose", help="increase output verbosity", action="store_true"
     )
-    parser.add_argument("-d", "--debug", help="Debug mode to test functions without instance", action="store_true" )
+    parser.add_argument("-d", "--debug", help="Debug mode to test functions without instance", action="store_true")
     args = parser.parse_args(argv[1:])
     date = args.date
     debug = args.debug
@@ -46,11 +47,11 @@ def main(argv):
 
     def send_log_message(message, error=False):
         if not debug:
-            if not error:
-                logger.info(message)
-            else:
-                logger.error(message)
             session.send_log_event(instance_id, message)
+        if not error:
+            logger.info(message)
+        else:
+            logger.error(message)
 
     send_log_message("Instancia inicializada.")
 
@@ -60,15 +61,25 @@ def main(argv):
     # Download files TODO
     send_log_message("Descargando datos para ADATRAP...")
 
-    # Download gps
+    # Download data buckets
     send_log_message("Descargando datos de gps...")
-    gps_bucket = config('GPS_BUCKET_NAME')
-    if not session.check_bucket_exists(gps_bucket):
-        send_log_message(f"'Bucket \'{gps_bucket}\' does not exist", error=True)
-        exit(1)
-    available_gps_days = [files['name'] for files in session.retrieve_obj_list(gps_bucket)]
-    gps_file = [day for day in available_gps_days if date in day]
-    print(gps_file)
+    data_buckets = [config('GPS_BUCKET_NAME'), config('FILE_196_BUCKET_NAME'), config('TRANSACTION_BUCKET_NAME')]
+    bucket_names = ["gps", "196", "transaction"]
+    for bucket, bucket_name in zip(data_buckets, bucket_names):
+        if not session.check_bucket_exists(bucket):
+            send_log_message(f"El bucket \'{bucket}\' no existe", error=True)
+            exit(1)
+        bucket_file = session.get_available_day_for_bucket(date, bucket)
+        if bucket_file:
+            send_log_message(f"Bucket encontrado con nombre {bucket_file}")
+            send_log_message(f"Descargando {bucket_file}...")
+            try:
+                session.download_object_from_bucket(bucket_file, bucket, bucket_file)
+            except ClientError as e:
+                send_log_message(e, error=True)
+                exit(1)
+        else:
+            send_log_message(f"No se ha encontrado un archivo con fecha {date} en el bucket asociado a {bucket_name}")
 
     # Download executable
     send_log_message("Descargando ejecutable ADATRAP...")
