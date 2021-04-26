@@ -185,3 +185,13 @@ class AWSSession:
         bucket = s3.Bucket(bucket_name)
         bucket.download_file(obj_key, file_path)
 
+    def get_available_day_for_bucket(self, date, bucket_name):
+        """
+        Check available days in bucket and compare with given date
+        :param date: date to check
+        :param bucket_name: name of the bucket
+        :return: name of matched bucket
+        """
+        available_bucket_days = [files['name'] for files in self.retrieve_obj_list(bucket_name)]
+        day = [day for day in available_bucket_days if date in day]
+        return day[0] if day else None
