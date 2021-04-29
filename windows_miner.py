@@ -77,6 +77,8 @@ def main(argv):
         if not session.check_bucket_exists(bucket):
             send_log_message(f"El bucket \'{bucket}\' no existe", error=True)
         bucket_file = session.get_available_day_for_bucket(date, bucket, bucket_name)
+        if bucket_name == "op":
+            config_file_replacements['op_path'] = bucket_file.split('.')[0]
         if bucket_file:
             send_log_message(f"Bucket encontrado con nombre {bucket_file}")
             send_log_message(f"Descargando {bucket_file}...")
@@ -111,7 +113,6 @@ def main(argv):
 
     # Process config file
     config_file_replacements['date'] = date
-
     with open(config_file_adatrap, "rt") as f:
         lines = f.read()
         for key, value in config_file_replacements.items():
