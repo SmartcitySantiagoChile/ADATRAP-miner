@@ -2,6 +2,7 @@ import argparse
 import logging
 import subprocess
 import sys
+import zipfile
 
 from botocore.exceptions import ClientError
 from decouple import config
@@ -77,8 +78,6 @@ def main(argv):
         if not session.check_bucket_exists(bucket):
             send_log_message(f"El bucket \'{bucket}\' no existe", error=True)
         bucket_file = session.get_available_day_for_bucket(date, bucket, bucket_name)
-        if bucket_name == "op":
-            config_file_replacements['op_path'] = bucket_file.split('.')[0]
         if bucket_file:
             send_log_message(f"Bucket encontrado con nombre {bucket_file}")
             send_log_message(f"Descargando {bucket_file}...")
@@ -86,6 +85,10 @@ def main(argv):
                 session.download_object_from_bucket(bucket_file, bucket, bucket_file)
             except ClientError as e:
                 send_log_message(e, error=True)
+            if bucket_name == "op":
+                config_file_replacements['op_path'] = bucket_file.split('.')[0]
+                with zipfile.ZipFile(bucket_file, 'r') as zip_ref:
+                    zip_ref.extractall(config_file_replacements["op_path"])
         else:
             send_log_message(
                 f"No se ha encontrado un archivo para la fecha {date} en el bucket asociado a {bucket_name}.",
