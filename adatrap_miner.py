@@ -5,7 +5,7 @@ import sys
 import botocore.exceptions
 from decouple import config
 
-import adatrapMiner.aws as aws
+import aws as aws
 
 logger = logging.getLogger(__name__)
 general_log_stream = config("GENERAL_LOG_STREAM")

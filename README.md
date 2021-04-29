@@ -93,7 +93,7 @@ OP_PROGRAM_BUCKET_NAME= Bucket de po
 
 FILE_196_BUCKET_NAME= Bucket de archivo 196
 
-TRANSACTION_BUCKET_NAME= Bucket de transacciones
+TRANSACTION_BUCKET_NAME= Bucket de transacciones    
 ### Creación de Key Pair
 
 Para la creación de instancias EC2 y el manejo de estas se requiere tener una **keypar** para poder acceder a las instancias creadas en python. Para esto el programa tiene un comando que permite la creación de un keypar dado los datos de usuario en el archivo .env.
@@ -117,4 +117,9 @@ Ya habiendo sido creada la keypar, esta se encontrará disponible en el panel de
 
 ![keypar](docs/img/keypar.png)
     
+
+## Uso
+Para ejecutar adatrap_miner se deben ejecutar el comando con la fecha en formato YYYY-MM-DD
+
+    python3 adatrap_miner 2021-04-22
 

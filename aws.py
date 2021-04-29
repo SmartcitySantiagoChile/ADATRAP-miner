@@ -1,6 +1,6 @@
 import time
 import urllib
-
+import datetime
 import boto3
 import botocore
 from decouple import config
@@ -185,13 +185,36 @@ class AWSSession:
         bucket = s3.Bucket(bucket_name)
         bucket.download_file(obj_key, file_path)
 
-    def get_available_day_for_bucket(self, date, bucket_name):
+    def get_available_day_for_bucket(self, date, bucket_name, bucket_type) -> str:
         """
         Check available days in bucket and compare with given date
+        :param bucket_type:
         :param date: date to check
         :param bucket_name: name of the bucket
         :return: name of matched bucket
         """
         available_bucket_days = [files['name'] for files in self.retrieve_obj_list(bucket_name)]
-        day = [day for day in available_bucket_days if date in day]
-        return day[0] if day else None
+        if bucket_type == "op":
+            return self._get_available_day_for_op_bucket(available_bucket_days, date)
+        else:
+            day = [day for day in available_bucket_days if date in day]
+            return day[0] if day else None
+
+    def _get_available_day_for_op_bucket(self, available_bucket_days, date):
+        """
+        Check conditions of date's availability for a given op date list
+        :param available_bucket_days: date list for op date
+        :param date: date to check
+        """
+        available_bucket_days = [datetime.date.fromisoformat(day.split('.')[0]) for day in available_bucket_days]
+        available_bucket_days.sort()
+        date = datetime.date.fromisoformat(date)
+        if date < available_bucket_days[0]:
+            return None
+        valid_date = available_bucket_days[0]
+        for available_day in available_bucket_days[1:]:
+            if available_day <= date:
+                valid_date = available_day
+        print(valid_date)
+        return f"{valid_date.isoformat()}.po.zip"
+

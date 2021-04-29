@@ -7,7 +7,7 @@ from botocore.exceptions import ClientError
 from decouple import config
 from ec2_metadata import ec2_metadata
 
-from adatrapMiner import aws
+import aws
 
 logger = logging.getLogger(__name__)
 general_log_stream: str = config("GENERAL_LOG_STREAM")
@@ -34,7 +34,7 @@ def main(argv):
     parser.add_argument(
         "-v", "--verbose", help="increase output verbosity", action="store_true"
     )
-    parser.add_argument("-d", "--debug", help="Debug mode to test functions without instance", action="store_true")
+    parser.add_argument("-d", "--debug", help="Debug mode to tests functions without instance", action="store_true")
     args = parser.parse_args(argv[1:])
     date = args.date
     debug = args.debug
@@ -46,30 +46,35 @@ def main(argv):
         instance_id = ec2_metadata.instance_id
 
     def send_log_message(message, error=False):
-        if not debug:
-            session.send_log_event(instance_id, message)
         if not error:
             logger.info(message)
+            if not debug:
+                session.send_log_event(instance_id, message)
         else:
             logger.error(message)
+            if not debug:
+                session.send_log_event(instance_id, message)
+                message = f"Error en la instancia {instance_id}, proceso abortado."
+                session.send_log_event(general_log_stream, message)
+            exit(1)
 
     send_log_message("Instancia inicializada.")
 
     # Initialization of ADATRAP
     send_log_message("Iniciando proceso ADATRAP...")
 
-    # Download files TODO
-    send_log_message("Descargando datos para ADATRAP...")
+    # Download files
+    send_log_message("Iniciando descarga de datos para ADATRAP...")
 
     # Download data buckets
-    send_log_message("Descargando datos de gps...")
-    data_buckets = [config('GPS_BUCKET_NAME'), config('FILE_196_BUCKET_NAME'), config('TRANSACTION_BUCKET_NAME')]
-    bucket_names = ["gps", "196", "transaction"]
+    data_buckets = [config('GPS_BUCKET_NAME'), config('FILE_196_BUCKET_NAME'), config('TRANSACTION_BUCKET_NAME'),
+                    config('OP_PROGRAM_BUCKET_NAME')]
+    bucket_names = ["gps", "196", "transaction", "op"]
     for bucket, bucket_name in zip(data_buckets, bucket_names):
+        send_log_message(f"Buscando datos de {bucket_name}...")
         if not session.check_bucket_exists(bucket):
             send_log_message(f"El bucket \'{bucket}\' no existe", error=True)
-            exit(1)
-        bucket_file = session.get_available_day_for_bucket(date, bucket)
+        bucket_file = session.get_available_day_for_bucket(date, bucket, bucket_name)
         if bucket_file:
             send_log_message(f"Bucket encontrado con nombre {bucket_file}")
             send_log_message(f"Descargando {bucket_file}...")
@@ -77,21 +82,20 @@ def main(argv):
                 session.download_object_from_bucket(bucket_file, bucket, bucket_file)
             except ClientError as e:
                 send_log_message(e, error=True)
-                exit(1)
         else:
-            send_log_message(f"No se ha encontrado un archivo con fecha {date} en el bucket asociado a {bucket_name}")
+            send_log_message(
+                f"No se ha encontrado un archivo para la fecha {date} en el bucket asociado a {bucket_name}.",
+                error=True)
 
     # Download executable
     send_log_message("Descargando ejecutable ADATRAP...")
     executable_bucket = config('EXECUTABLES_BUCKET')
     if not session.check_bucket_exists(executable_bucket):
         send_log_message(f"'Bucket \'{executable_bucket}\' does not exist", error=True)
-        exit(1)
     try:
         session.download_object_from_bucket(executable_adatrap, executable_bucket, executable_adatrap)
     except ClientError as e:
         send_log_message(e, error=True)
-        exit(1)
     send_log_message('Ejecutable ADATRAP descargado.')
 
     # Download config file
