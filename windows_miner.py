@@ -11,7 +11,7 @@ import aws
 
 logger = logging.getLogger(__name__)
 general_log_stream: str = config("GENERAL_LOG_STREAM")
-executable_adatrap: str = 'pvmts_dummy.exe'
+executable_adatrap: str = 'pvmts.exe'
 config_file_adatrap: str = 'configuration.par'
 config_file_replacements: dict = {
     'op_path': 'op_path_replacement',
@@ -45,11 +45,13 @@ def main(argv):
     if not debug:
         instance_id = ec2_metadata.instance_id
 
-    def send_log_message(message, error=False):
+    def send_log_message(message, error=False, general=True):
         if not error:
             logger.info(message)
             if not debug:
                 session.send_log_event(instance_id, message)
+                if general:
+                    session.send_log_event(general_log_stream, message)
         else:
             logger.error(message)
             if not debug:
@@ -130,7 +132,7 @@ def main(argv):
         error_message = res.stderr.decode("utf-8")
         if error_message:
             send_log_message(error_message)
-        send_log_message("Proceso ADATRAP finalizado.")
+        send_log_message(f"Proceso ADATRAP para la instancia {instance_id} finalizado.")
 
 
 if __name__ == "__main__":
