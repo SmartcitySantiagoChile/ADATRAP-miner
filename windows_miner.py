@@ -19,8 +19,9 @@ config_file_adatrap: str = 'configuration.par'
 config_file_replacements: dict = {
     'op_path': 'op_path_replacement',
     'day_type': 'LABORAL',
-    'service_detail_file': 'Diccionario-DetalleServicioZP_20201116_20201130v2.csv',
-    'date': 'date'
+    'service_detail_file': 'service_detail',
+    'date': 'date',
+    '_PO-': 'podate'
 }
 
 
@@ -127,6 +128,7 @@ def main(argv):
 
     # Process config file
     config_file_replacements['date'] = date
+    config_file_replacements['_PO-'] = f"_PO{''.join(date.split('-'))}"
     with open(config_file_adatrap, "rt") as f:
         lines = f.read()
         for key, value in config_file_replacements.items():
