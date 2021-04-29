@@ -215,6 +215,5 @@ class AWSSession:
         for available_day in available_bucket_days[1:]:
             if available_day <= date:
                 valid_date = available_day
-        print(valid_date)
         return f"{valid_date.isoformat()}.po.zip"
 

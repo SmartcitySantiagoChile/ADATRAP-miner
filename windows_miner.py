@@ -1,5 +1,7 @@
 import argparse
+import glob
 import logging
+import os
 import subprocess
 import sys
 import zipfile
@@ -89,6 +91,15 @@ def main(argv):
                 config_file_replacements['op_path'] = bucket_file.split('.')[0]
                 with zipfile.ZipFile(bucket_file, 'r') as zip_ref:
                     zip_ref.extractall(config_file_replacements["op_path"])
+                    service_detail_path = os.path.join(f"{config_file_replacements['op_path']}",
+                                                  config_file_replacements['op_path'])
+                    config_file_replacements['op_path'] = service_detail_path
+                    service_detail_path = os.path.join(service_detail_path, "Diccionario")
+                    service_detail_regex = "Diccionario-DetalleServicioZP*"
+                    name = glob.glob(os.path.join(service_detail_path, service_detail_regex))[0]
+                    send_log_message(f"El archivo de zonsa pagas se se encuentra en {service_detail_path}")
+                    send_log_message(f"El nombre es {name}")
+                    config_file_replacements["service_detail_file"] = name
         else:
             send_log_message(
                 f"No se ha encontrado un archivo para la fecha {date} en el bucket asociado a {bucket_name}.",
