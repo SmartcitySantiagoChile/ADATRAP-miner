@@ -7,7 +7,9 @@ import shutil
 import subprocess
 import sys
 import zipfile
-
+from zipfile import ZipFile
+import os
+from os.path import basename
 from botocore.exceptions import ClientError
 from decouple import config
 from ec2_metadata import ec2_metadata
@@ -157,6 +159,16 @@ def main(argv):
             send_log_message(res_message)
             # Compress and upload data
             folder_path = os.path.join(data_path, date)
+            send_log_message("Comprimiendo datos...")
+            with ZipFile(f"{date}.zip", 'w') as zipObj:
+                # Iterate over all the files in directory
+                for folder_name, subfolders, filenames in os.walk(folder_path):
+                    for filename in filenames:
+                        #create conmplete filepath of file in directory
+                        file_path = os.path.join(folder_name, filename)
+                        # Add file to zip
+                        zipObj.write(file_path, basename(file_path))
+            # Upload to S3
         error_message = res.stderr.decode("utf-8")
         if error_message:
             send_log_message(error_message)

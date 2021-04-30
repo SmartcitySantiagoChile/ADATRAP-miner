@@ -217,3 +217,15 @@ class AWSSession:
                 valid_date = available_day
         return f"{valid_date.isoformat()}.po.zip"
 
+    def send_file_to_bucket(self, file_path, file_key, bucket_name):
+        s3 = self.session.resource('s3')
+        bucket = s3.Bucket(bucket_name)
+        bucket.upload_file(file_path, file_key)
+
+        return self._build_url(file_key, bucket_name)
+
+    def send_object_to_bucket(self, obj, obj_key, bucket_name):
+        s3 = self.session.resource('s3')
+        bucket = s3.Bucket(bucket_name)
+        bucket.upload_fileobj(obj, obj_key)
+        s3.Object(bucket_name, obj_key).Acl().put(ACL='public-read')
