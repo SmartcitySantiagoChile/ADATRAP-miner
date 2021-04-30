@@ -45,7 +45,6 @@ def main(argv):
     args = parser.parse_args(argv[1:])
     date = args.date
     debug = args.debug
-    path = config("ADATRAP_PATH")
 
     # Initial Log
     session = aws.AWSSession()
