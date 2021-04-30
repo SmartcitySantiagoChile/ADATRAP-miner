@@ -15,17 +15,17 @@ from ec2_metadata import ec2_metadata
 import aws
 
 logger = logging.getLogger(__name__)
+data_path: str = "ADATRAP"
 general_log_stream: str = config("GENERAL_LOG_STREAM")
-executable_adatrap: str = 'pvmts_dummy.exe'
+executable_adatrap: str = 'pvmts.exe'
 config_file_adatrap: str = 'configuration.par'
 config_file_replacements: dict = {
     'op_path': 'op_path_replacement',
-    'day_type': 'LABORAL',
+    'day_type': 'LABORAL',  # TODO: check
     'service_detail_file': 'service_detail',
     'date': 'date',
     '_PO-': 'podate'
 }
-data_path = os.path.join("C", "DATOS", "ADATRAP", "DIAS")
 
 
 def main(argv):
