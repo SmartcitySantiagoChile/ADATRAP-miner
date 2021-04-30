@@ -3,6 +3,7 @@ import glob
 import gzip
 import logging
 import os
+import shutil
 import subprocess
 import sys
 import zipfile
@@ -107,9 +108,8 @@ def main(argv):
                     config_file_replacements["service_detail_file"] = name
             else:
                 send_log_message(f"Descomprimiendo archivo {bucket_file}...")
-                with open(bucket_file, 'rb') as file:
-                    file = file.read()
-                    gzip.decompress(file)
+                with gzip.open(bucket_file, 'r') as f_in, open('.'.join(bucket_file.split('.')[:2]), 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
         else:
             send_log_message(
                 f"No se ha encontrado un archivo para la fecha {date} en el bucket asociado a {bucket_name}.",
