@@ -146,6 +146,7 @@ def main(argv):
 
     # Run ADATRAP
     if not debug:
+        send_log_message("Ejecutando ADATRAP...")
         res = subprocess.run(
             [executable_adatrap, f"{date}.par"],
             capture_output=True,
