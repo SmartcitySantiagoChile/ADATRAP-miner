@@ -16,7 +16,7 @@ import aws
 
 logger = logging.getLogger(__name__)
 general_log_stream: str = config("GENERAL_LOG_STREAM")
-executable_adatrap: str = 'pvmts.exe'
+executable_adatrap: str = 'pvmts_dummy.exe'
 config_file_adatrap: str = 'configuration.par'
 config_file_replacements: dict = {
     'op_path': 'op_path_replacement',
@@ -25,6 +25,7 @@ config_file_replacements: dict = {
     'date': 'date',
     '_PO-': 'podate'
 }
+data_path = os.path.join("C", "DATOS", "ADATRAP", "DIAS")
 
 
 def main(argv):
@@ -155,6 +156,8 @@ def main(argv):
         res_message = res.stdout.decode("utf-8")
         if res_message:
             send_log_message(res_message)
+            # Compress and upload data
+            folder_path = os.path.join(data_path, date)
         error_message = res.stderr.decode("utf-8")
         if error_message:
             send_log_message(error_message)
