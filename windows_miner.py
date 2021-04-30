@@ -51,7 +51,7 @@ def main(argv):
     if not debug:
         instance_id = ec2_metadata.instance_id
 
-    def send_log_message(message, error=False, general=True):
+    def send_log_message(message, error=False, general=False):
         if not error:
             logger.info(message)
             if not debug:
@@ -160,7 +160,7 @@ def main(argv):
         error_message = res.stderr.decode("utf-8")
         if error_message:
             send_log_message(error_message)
-        send_log_message(f"Proceso ADATRAP para la instancia {instance_id} finalizado.")
+        send_log_message(f"Proceso ADATRAP para la instancia {instance_id} finalizado.", general=True)
 
 
 if __name__ == "__main__":

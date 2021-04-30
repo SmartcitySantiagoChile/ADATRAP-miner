@@ -4,8 +4,8 @@ Programa que se encarga de descargar y procesar datos de viajes y transacciones 
 
 ## Instalación del proyecto
 
-El proyecto se encuentra desarrollado en Python 3.8 y utiliza [Instancias EC2 de Amazon Web Services](
-aws.amazon.com/aws/ec2) para su funcionamiento.
+El proyecto se encuentra desarrollado en Python 3.8 y utiliza los siguientes servicios de Amazon Web Services para su funcionamiento:
+    [EC2](aws.amazon.com/aws/ec2), [S3]() y [Cloudwatch](). 
 
 ### Requerimientos
 
@@ -29,7 +29,7 @@ Las librerías necesarias para ejecutar el proyecto están definidas en el archi
 ubicado en la raíz del proyecto y se pueden instalar rápidamente con el comando `pip install -r requirements.txt`.
 
 ### Usuario AWS
-Para el funcionamiento del script se requieren las credenciales de un usuario AWS con permisos **AmazonEC2FullAcces**.
+Para el funcionamiento del script se requieren las credenciales de un usuario AWS con permisos **AmazonEC2FullAcces**
 
 #### 1) Crear usuario
 Para crear un usuario nuevo se debe acceder a la plataforma [IAM](https://console.aws.amazon.com/iam/home#/home) de AWS en la sección [usuarios](https://console.aws.amazon.com/iam/home#/users) y seleccionar la opción **Add User**:
