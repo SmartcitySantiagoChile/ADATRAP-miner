@@ -21,7 +21,7 @@ def cli(context):
 
 @cli.command()
 @click.pass_context
-def create_key_par(context):
+def create_key_par(context) -> None:
     """Create key par to use with EC2 instances."""
     context = context.obj
     try:

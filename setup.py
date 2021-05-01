@@ -1,14 +1,14 @@
 from setuptools import setup
 
 setup(
-    name='miner',
+    name='adatrap_miner',
     version='0.1',
-    py_modules=['miner'],
+    py_modules=['adatrap_miner'],
     install_requires=[
         'Click',
     ],
     entry_points='''
         [console_scripts]
-        miner=miner:cli
+        adatrap_miner=adatrap_miner:cli
     ''',
 )
