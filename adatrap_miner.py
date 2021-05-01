@@ -1,68 +1,62 @@
-import argparse
 import logging
-import sys
 
-import botocore.exceptions
+import botocore
+import click
 from decouple import config
 
-import aws as aws
-
-logger = logging.getLogger(__name__)
-general_log_stream = config("GENERAL_LOG_STREAM")
+import aws
 
 
-def main(argv):
-    """
-    Script to manage EC2 instances
-    """
+@click.group()
+@click.pass_context
+def cli(context):
+    """Adatrap Miner: manage ec2 instances to automaticaly process ADATRAP data."""
+    context.ensure_object(dict)
+    context.obj['logger'] = logging.getLogger(__name__)
+    context.obj['general_log_stream'] = config("GENERAL_LOG_STREAM")
+    context.obj['session'] = aws.AWSSession()
     logging.basicConfig(level=logging.INFO)
 
-    # Arguments and description
-    parser = argparse.ArgumentParser(description="manage EC2 instances and ADATRAP")
-    parser.add_argument(
-        "-c",
-        "--create_key_par",
-        help="Create EC2 pair for .env given user",
-        action="store_true",
-    )
-    parser.add_argument(
-        "-v", "--verbose", help="increase output verbosity", action="store_true"
-    )
-    parser.add_argument("date", help="Date to execute adatrap")
-
-    args = parser.parse_args(argv[1:])
-
-    date = args.date
-    # Create Key Par
-    session = aws.AWSSession()
-    if args.create_key_par:
-        try:
-            session.create_key_pair()
-            message = "¡Keypair creado exitosamente! El archivo ec2-keypair.pem se encuentra en la raíz del proyecto."
-            logger.info(message)
-            session.send_log_event(general_log_stream, message)
-        except botocore.exceptions.ClientError:
-            message = "El keypair 'ec2-keypair' ya existe."
-            logger.error(message)
-            session.send_log_event(general_log_stream, message)
-    else:
-        # Create EC2 instance
-        status = session.run_ec2_instance(date)
-        instance_id = status["Instances"][0]["InstanceId"]
-        message = f"Instancia creada con id: {instance_id}"
-        logger.info(message)
-        session.send_log_event(general_log_stream, message)
-
-        # Create EC2 Log Stream
-        session.create_log_stream(instance_id)
-        message = f"Log Stream creado con nombre: {instance_id}"
-        logger.info(message)
-        session.send_log_event(general_log_stream, message)
-
-        # Send initial message to EC2 Log Stream
-        message = "Instancia creada correctamente."
-        session.send_log_event(instance_id, message)
 
 
-if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+@cli.command()
+@click.pass_context
+def create_key_par(context):
+    """Create key par to use with EC2 instances."""
+    context = context.obj
+    try:
+        context['session'].create_key_pair()
+        message = "¡Keypair creado exitosamente! El archivo ec2-keypair.pem se encuentra en la raíz del proyecto."
+        context['logger'].info(message)
+        context['session'].send_log_event(context['general_log_stream'], message)
+    except botocore.exceptions.ClientError:
+        message = "El keypair 'ec2-keypair' ya existe."
+        context['logger'].error(message)
+        context['session'].send_log_event(context['general_log_stream'], message)
+
+
+@cli.command()
+@click.argument('date')
+@click.pass_context
+def create_ec2_instance(context, date) -> None:
+    """
+    Create an ec2 instance with windows miner.
+
+    DATE is the date to process in the ec2 instance
+    """
+    context = context.obj
+    status = context['session'].run_ec2_instance(date)
+    instance_id = status["Instances"][0]["InstanceId"]
+    message = f"Instancia creada con id: {instance_id} para el día {date}"
+    context['logger'].info(message)
+    context['session'].send_log_event(context['general_log_stream'], message)
+
+    # Create EC2 Log Stream
+    context['session'].create_log_stream(instance_id)
+    message = f"Log Stream creado con nombre: {instance_id}"
+    context['logger'].info(message)
+    context['session'].send_log_event(context['general_log_stream'], message)
+
+    # Send initial message to EC2 Log Stream
+    message = "Instancia creada correctamente."
+    context['session'].send_log_event(instance_id, message)
