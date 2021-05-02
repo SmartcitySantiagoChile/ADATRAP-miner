@@ -231,27 +231,12 @@ class AWSSession:
         bucket.upload_fileobj(obj, obj_key)
         s3.Object(bucket_name, obj_key).Acl().put(ACL='public-read')
 
-
-    def run_ec2_instance(self, date):
+    def stop_ec2_instance(self, instance_id):
         """
-        Create an EC2 instance and next run a given command
+        Finish ec2 instance with given id
         :return: instance id
         """
-        ec2 = self.session.client("ec2")
-        env_file = self._read_env_file()
-        with open('windows_script') as f:
-            lines = f.read()
-            lines = lines.replace('EC2DATE', date).replace("ENV_DATA",
-                                                           env_file)
-            script = lines
-            instances = ec2.run_instances(
-                ImageId=config("AMI_ID"),
-                MinCount=1,
-                MaxCount=1,
-                InstanceType="t2.micro",
-                KeyName="ec2-keypair",
-                UserData=script,
-                Monitoring={"Enabled": True},
-            )
-        return instances
+        ec2 = self.session.resource("ec2")
+        instance = ec2.Instance(instance_id)
+        return instance.terminate()
 

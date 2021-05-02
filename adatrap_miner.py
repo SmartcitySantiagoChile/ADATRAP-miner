@@ -67,11 +67,23 @@ def create_ec2_instance(context, date) -> None:
 
 
 @cli.command()
-@click.argument('id')
+@click.argument('instance_id')
 @click.pass_context
-def stop_ec2_instance(context, id) -> None:
+def stop_ec2_instance(context, instance_id) -> None:
     """
-    Stop an ec2 instance with a given id
+    Stop an ec2 instance with a given id.
 
     ID is the id of the ec2 instance
     """
+    context = context.obj
+    message = f"Finalizando instancia con id {instance_id}..."
+    context['logger'].info(message)
+    context['session'].send_log_event(context['general_log_stream'], message)
+    try:
+        context['session'].stop_ec2_instance(instance_id)
+        message = f"Instancia con id {instance_id} finalizada."
+        context['logger'].info(message)
+    except botocore.exceptions.ClientError:
+        message = f"No se pudo terminar instancia con id {instance_id}, id inválido."
+        context['logger'].info(message)
+        context['session'].send_log_event(context['general_log_stream'], message)
