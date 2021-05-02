@@ -1,6 +1,7 @@
+import datetime
 import time
 import urllib
-import datetime
+
 import boto3
 import botocore
 from decouple import config
@@ -19,17 +20,16 @@ class AWSSession:
         )
         self.log_group = config("LOG_GROUP")
 
-    def create_key_pair(self):
+    def create_key_pair(self, name="ec2-keypair"):
         """
-        Create a key_pair with the ec2-keypair name.
+        Create a key_pair with given name (ec2-keypair default).
         The ec2-keypair.pem file will be saved at root folder.
         """
         ec2 = self.session.resource("ec2")
-        outfile = open("ec2-keypair.pem", "w")
-        key_pair = ec2.create_key_pair(KeyName="ec2-keypair")
+        outfile = open(f"{name}.pem", "w")
+        key_pair = ec2.create_key_pair(KeyName=name)
         key_pair_out = str(key_pair.key_material)
         outfile.write(key_pair_out)
-
 
     def run_ec2_instance(self, date):
         """
@@ -41,7 +41,7 @@ class AWSSession:
         with open('windows_script') as f:
             lines = f.read()
             lines = lines.replace('EC2DATE', date).replace("ENV_DATA",
-                                                                                              env_file)
+                                                           env_file)
             script = lines
             instances = ec2.run_instances(
                 ImageId=config("AMI_ID"),

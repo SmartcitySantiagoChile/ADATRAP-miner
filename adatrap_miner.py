@@ -18,19 +18,23 @@ def cli(context):
     logging.basicConfig(level=logging.INFO)
 
 
-
 @cli.command()
+@click.argument('name', nargs=-1)
 @click.pass_context
-def create_key_par(context) -> None:
-    """Create key par to use with EC2 instances."""
+def create_key_pair(context, name) -> None:
+    """Create key pair to use with EC2 instances.
+
+    NAME (optional) is the name of the key pair
+    """
     context = context.obj
+    name = "ec2-keypair" if not name else name[0]
     try:
-        context['session'].create_key_pair()
-        message = "¡Keypair creado exitosamente! El archivo ec2-keypair.pem se encuentra en la raíz del proyecto."
+        context['session'].create_key_pair(name)
+        message = f"¡Keypair creado exitosamente! El archivo '{name}.pem' se encuentra en la raíz del proyecto."
         context['logger'].info(message)
         context['session'].send_log_event(context['general_log_stream'], message)
     except botocore.exceptions.ClientError:
-        message = "El keypair 'ec2-keypair' ya existe."
+        message = f"El keypair '{name}' ya existe."
         context['logger'].error(message)
         context['session'].send_log_event(context['general_log_stream'], message)
 
@@ -60,3 +64,13 @@ def create_ec2_instance(context, date) -> None:
     # Send initial message to EC2 Log Stream
     message = "Instancia creada correctamente."
     context['session'].send_log_event(instance_id, message)
+
+@cli.command()
+@click.argument('id')
+@click.pass_context
+def stop_ec2_instance(context, id) -> None:
+    """
+    Stop an ec2 instance with a given id
+
+    ID is the id of the ec2 instance
+    """
