@@ -65,6 +65,7 @@ def create_ec2_instance(context, date) -> None:
     message = "Instancia creada correctamente."
     context['session'].send_log_event(instance_id, message)
 
+
 @cli.command()
 @click.argument('id')
 @click.pass_context
