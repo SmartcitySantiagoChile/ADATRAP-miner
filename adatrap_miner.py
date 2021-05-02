@@ -2,9 +2,33 @@ import logging
 
 import botocore
 import click
-from decouple import config
+from decouple import config, UndefinedValueError
 
 import aws
+
+
+def check_env_variables():
+    env_dict = {
+        "AWS_ACCESS_KEY_ID": "Id de acceso a AWS",
+        "AWS_SECRET_ACCESS_KEY": "Clave de acceso a AWS",
+        "REGION_NAME": "Region de acceso a AWS",
+        "AMI_ID": "Id de AMI (Amazon Machine Image) a utilizar",
+        "KEY_PAIR": "Par de claves de acceso a EC2 AWS",
+        "LOG_GROUP": "Nombre de log de grupo Cloudwatch",
+        "GENERAL_LOG_STREAM": "Nombre del log stream general de Cloudwatch",
+        "EXECUTABLES_BUCKET": "Bucket S3 que contiene el ejecutable y configurable ADATARP",
+        "GPS_BUCKET_NAME": "Bucket S3 que contiene datos de gps",
+        "OP_PROGRAM_BUCKET_NAME": "Bucket S3 que contiene datos de programas de operación",
+        "FILE_196_BUCKET_NAME": "Bucket S3 que contiene datos 196",
+        "TRANSACTION_BUCKET_NAME": "Bucket S3 que contiene datos de transacciones",
+        "DATA_BUCKET_NAME": "Bucket S3 donde se almacenan los resultados de ADATRAP"
+    }
+    for key, answer in env_dict.items():
+        try:
+            name = config(key)
+        except UndefinedValueError:
+            logging.getLogger(__name__).error(f"Variable {key} ({answer}) no definida en .env")
+            exit(1)
 
 
 @click.group()
@@ -13,6 +37,7 @@ def cli(context):
     """Adatrap Miner: manage ec2 instances to automaticaly process ADATRAP data."""
     context.ensure_object(dict)
     context.obj['logger'] = logging.getLogger(__name__)
+    check_env_variables()
     context.obj['general_log_stream'] = config("GENERAL_LOG_STREAM")
     context.obj['session'] = aws.AWSSession()
     logging.basicConfig(level=logging.INFO)

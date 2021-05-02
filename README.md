@@ -26,8 +26,13 @@ Para no tener conflictos de dependencias se recomienda hacer uso de un [entorno 
 #### Instalación de dependencias Python
 
 Las librerías necesarias para ejecutar el proyecto están definidas en el archivo `requirements.txt`
-ubicado en la raíz del proyecto y se pueden instalar rápidamente con el comando `pip install -r requirements.txt`.
+ubicado en la raíz del proyecto y se pueden instalar rápidamente con el comando: 
 
+    pip install -r requirements.txt
+
+Además para agregar el comando `adatrap_miner` a las variables de ambiente se debe ejecutar:
+    
+    pip install -e .
 ### Usuario AWS
 Para el funcionamiento del script se requieren las credenciales de un usuario AWS con permisos **AmazonEC2FullAcces**
 
@@ -83,6 +88,10 @@ REGION_NAME= Región donde se ubicará la instancia EC2 (Ejemplo: us-east-2)
 
 AMI_ID= Id de la imagen a utilizar en la instancia EC2
 
+KEY_PAIR= Par de claves para acceso ec2 (Si se desea crear una dejar un nombre por defecto.)
+
+LOG_GROUP= NNombre de log de grupo Cloudwatch"
+
 GENERAL_LOG_STREAM= Id para el log general
 
 EXECUTABLES_BUCKET= Bucket donde se encuentra ejecutable ADATRAP    
@@ -94,6 +103,9 @@ OP_PROGRAM_BUCKET_NAME= Bucket de po
 FILE_196_BUCKET_NAME= Bucket de archivo 196
 
 TRANSACTION_BUCKET_NAME= Bucket de transacciones    
+
+DATA_BUCKET_NAME= Bucket S3 donde se almacenan los resultados de ADATRAP
+
 ### Creación de Key Pair
 
 Para la creación de instancias EC2 y el manejo de estas se requiere tener una **keypar** para poder acceder a las instancias creadas en python. Para esto el programa tiene un comando que permite la creación de un keypar dado los datos de usuario en el archivo .env.
