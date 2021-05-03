@@ -118,3 +118,22 @@ def stop_ec2_instance(context, instance_id) -> None:
         context['logger'].info(message)
         context['session'].send_log_event(context['general_log_stream'], message)
 
+
+@cli.command()
+@click.pass_context
+def get_general_log(context) -> None:
+    """
+    Get general log stream
+    """
+    context = context.obj
+    message = f"Obteniendo últimos logs..."
+    context['logger'].info(message)
+    try:
+        log_events = context['session'].get_log_stream(config('LOG_GROUP'), config('GENERAL_LOG_STREAM'),
+                                                       start_date='2020-01-01')
+    except botocore.exceptions.ClientError:
+        message = f"No se pueden obtener los logs generales."
+        context['logger'].error(message)
+        exit(1)
+    for event in log_events:
+        context['logger'].info(event['message'])

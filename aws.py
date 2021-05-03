@@ -73,6 +73,17 @@ class AWSSession:
         return lines
 
     # Cloudwatch methods
+    def get_log_stream(self, log_group_name: str, log_stream_name: str, start_date: str) -> list:
+        logs = self.session.client("logs")
+        formated_start_date = datetime.date.fromisoformat(start_date)
+        formated_start_time = int(
+            datetime.datetime.combine(formated_start_date, datetime.datetime.min.time()).timestamp())
+        response = logs.get_log_events(
+            logGroupName=log_group_name,
+            logStreamName=log_stream_name,
+            startTime=formated_start_time,
+        )
+        return response['events']
 
     def create_log_stream(self, name: str) -> None:
         """
