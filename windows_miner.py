@@ -35,9 +35,6 @@ def main(argv):
     """
     Script to execute ADATRAP
     """
-    # Change timezone
-    os.environ['TZ'] = 'America/Santiago'
-    time.tzset()
 
     logging.basicConfig(level=logging.INFO)
 
