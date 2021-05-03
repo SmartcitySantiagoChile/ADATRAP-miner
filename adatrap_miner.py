@@ -121,26 +121,30 @@ def stop_ec2_instance(context, instance_id) -> None:
 
 @cli.command()
 @click.pass_context
+@click.argument('log_name')
+@click.option('-s', '--start_date', 'start_date', help='start date to search logs (YYYY-MM-DD).')
 @click.option('-o', '--output', 'output', help='filename to save log.')
-def get_general_log(context, output) -> None:
+def get_log_stream(context, output, start_date, log_name) -> None:
     """
-    Get general log stream
+    Get logs stream from a given name and given date.
 
-    OUTPUT filename to save
+    LOG_STREAM_NAME is the name of the log stream.
+
     """
+    start_date = "2000-01-01" if not start_date else start_date
     context = context.obj
     message = f"Obteniendo últimos logs..."
     context['logger'].info(message)
     try:
-        log_events = context['session'].get_log_stream(config('LOG_GROUP'), config('GENERAL_LOG_STREAM'),
-                                                       start_date='2020-01-01')
+        log_events = context['session'].get_log_stream(config('LOG_GROUP'), log_name,
+                                                       start_date=start_date)
     except botocore.exceptions.ClientError:
         message = f"No se pueden obtener los logs generales."
         context['logger'].error(message)
         exit(1)
 
     if output:
-        with open(f"{output}.log",'w') as l:
+        with open(f"{output}.log", 'w') as l:
             for event in log_events:
                 l.write(event["message"].replace("\n", "") + '\n')
         message = f"Logs almacenados exitosamente en {output}.log "
@@ -150,5 +154,4 @@ def get_general_log(context, output) -> None:
             context['logger'].info(event['message'])
         message = f"Logs desplegados exitosamente."
         context['logger'].info(message)
-
 
