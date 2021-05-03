@@ -121,9 +121,12 @@ def stop_ec2_instance(context, instance_id) -> None:
 
 @cli.command()
 @click.pass_context
-def get_general_log(context) -> None:
+@click.option('-o', '--output', 'output', help='filename to save log.')
+def get_general_log(context, output) -> None:
     """
     Get general log stream
+
+    OUTPUT filename to save
     """
     context = context.obj
     message = f"Obteniendo últimos logs..."
@@ -135,5 +138,17 @@ def get_general_log(context) -> None:
         message = f"No se pueden obtener los logs generales."
         context['logger'].error(message)
         exit(1)
-    for event in log_events:
-        context['logger'].info(event['message'])
+
+    if output:
+        with open(f"{output}.log",'w') as l:
+            for event in log_events:
+                l.write(event["message"].replace("\n", "") + '\n')
+        message = f"Logs almacenados exitosamente en {output}.log "
+        context['logger'].info(message)
+    else:
+        for event in log_events:
+            context['logger'].info(event['message'])
+        message = f"Logs desplegados exitosamente."
+        context['logger'].info(message)
+
+
