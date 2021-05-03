@@ -23,11 +23,11 @@ general_log_stream: str = config("GENERAL_LOG_STREAM")
 executable_adatrap: str = 'pvmts.exe'
 config_file_adatrap: str = 'template-configuration.par'
 config_file_replacements: dict = {
-    'op_path': 'op_path_replacement',
+    '{po_path}': 'op_path_replacement',
     'day_type': 'LABORAL',  # TODO: check
-    'service_detail_file': 'service_detail',
-    'date': 'date',
-    '_PO-': 'podate'
+    '{service_detail_file}': 'service_detail',
+    '{date}': 'date',
+    '{po_date}': 'podate'
 }
 
 
@@ -95,11 +95,11 @@ def main(argv):
                 send_log_message(e, error=True)
 
             if bucket_name == "op":
-                config_file_replacements['op_path'] = bucket_file.split('.')[0]
-                config_file_replacements['_PO-'] = f"_PO{''.join(config_file_replacements['op_path'].split('-'))}"
+                config_file_replacements['{po_path}'] = bucket_file.split('.')[0]
+                config_file_replacements['{po_date}'] = ''.join(config_file_replacements['op_path'].split('-'))
                 with zipfile.ZipFile(bucket_file, 'r') as zip_ref:
-                    service_detail_path = config_file_replacements['op_path']
-                    send_log_message(f"Descrompimiendo archivo {bucket_file}...")
+                    service_detail_path = config_file_replacements['{po_path}']
+                    send_log_message(f"Descomprimiendo archivo {bucket_file}...")
                     zip_ref.extractall()
 
                     # get service detail file
@@ -108,7 +108,7 @@ def main(argv):
                     name = glob.glob(os.path.join(service_detail_path, service_detail_regex))[0]  # TODO: check
                     send_log_message(f"El archivo de zonas pagas se encuentra en {service_detail_path}")
                     send_log_message(f"El nombre es {name}")
-                    config_file_replacements["service_detail_file"] = name
+                    config_file_replacements["{service_detail_file}"] = name
             else:
                 send_log_message(f"Descomprimiendo archivo {bucket_file}...")
                 with gzip.open(bucket_file, 'r') as f_in, open('.'.join(bucket_file.split('.')[:2]), 'wb') as f_out:
@@ -139,7 +139,7 @@ def main(argv):
     send_log_message('Archivo de configuración ADATRAP descargado.')
 
     # Process config file
-    config_file_replacements['date'] = date
+    config_file_replacements['{date}'] = date
     with open(config_file_adatrap, "rt") as f:
         lines = f.read()
         for key, value in config_file_replacements.items():
