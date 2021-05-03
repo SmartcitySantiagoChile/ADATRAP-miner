@@ -20,7 +20,9 @@ class AWSSession:
         )
         self.log_group = config("LOG_GROUP")
 
-    def create_key_pair(self, name="ec2-keypair"):
+    # EC2 methods
+
+    def create_key_pair(self, name: str = "ec2-keypair") -> None:
         """
         Create a key_pair with given name (ec2-keypair default).
         The ec2-keypair.pem file will be saved at root folder.
@@ -31,7 +33,7 @@ class AWSSession:
         key_pair_out = str(key_pair.key_material)
         outfile.write(key_pair_out)
 
-    def run_ec2_instance(self, date):
+    def run_ec2_instance(self, date: str) -> dict:
         """
         Create an EC2 instance and next run a given command
         :return: instance id
@@ -55,15 +57,18 @@ class AWSSession:
             )
         return instances
 
-    def execute_commands(self, commands, instance_id):
-        res = self.session.client("ssm").send_command(
-            DocumentName="AWS-RunShellScript",
-            Parameters={"commands": commands},
-            InstanceIds=[instance_id],
-        )
-        return res
+    def stop_ec2_instance(self, instance_id: str):
+        """
+        Finish ec2 instance with given id
+        :return: instance id
+        """
+        ec2 = self.session.resource("ec2")
+        instance = ec2.Instance(instance_id)
+        return instance.terminate()
 
-    def create_log_stream(self, name):
+    # Cloudwatch methods
+
+    def create_log_stream(self, name: str) -> None:
         """
         Create a Log Stream with given name
         :param name: name of the Log Stream
@@ -71,7 +76,7 @@ class AWSSession:
         logs = self.session.client("logs")
         logs.create_log_stream(logGroupName=self.log_group, logStreamName=name)
 
-    def send_log_event(self, log_stream_name, message):
+    def send_log_event(self, log_stream_name: str, message: str) -> dict:
         """
         Send a Log Event to a Log Stream
         :param log_stream_name: name of the Log Stream
@@ -97,7 +102,7 @@ class AWSSession:
         response = logs.put_log_events(**args)
         return response
 
-    def get_last_token_event(self, log_stream_name):
+    def get_last_token_event(self, log_stream_name: str) -> str:
         """
         Get last token event for a log stream. It is needed for an existing Log Stream.
         :param log_stream_name: Log Stream name
@@ -119,6 +124,7 @@ class AWSSession:
             logGroupName=group_name,
         )
         logs.put_resource_policy(policyName="string", policyDocument="string")
+        logs.put_retention_policy(logGroupName=group_name, retentionInDays=retention)
         return response
 
     def get_instance_id(self):
@@ -230,13 +236,3 @@ class AWSSession:
         bucket = s3.Bucket(bucket_name)
         bucket.upload_fileobj(obj, obj_key)
         s3.Object(bucket_name, obj_key).Acl().put(ACL='public-read')
-
-    def stop_ec2_instance(self, instance_id):
-        """
-        Finish ec2 instance with given id
-        :return: instance id
-        """
-        ec2 = self.session.resource("ec2")
-        instance = ec2.Instance(instance_id)
-        return instance.terminate()
-
