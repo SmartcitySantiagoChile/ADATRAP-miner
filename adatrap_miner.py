@@ -75,6 +75,9 @@ def create_ec2_instance(context, date) -> None:
     """
     context = context.obj
     try:
+        message = f"Creando instancia para el día {date}..."
+        context['logger'].info(message)
+        context['session'].send_log_event(context['general_log_stream'], message)
         status = context['session'].run_ec2_instance(date)
         instance_id = status["Instances"][0]["InstanceId"]
         message = f"Instancia creada con id: {instance_id} para el día {date}"
@@ -82,6 +85,9 @@ def create_ec2_instance(context, date) -> None:
         context['session'].send_log_event(context['general_log_stream'], message)
 
         # Create EC2 Log Stream
+        message = f"Creando log stream para instancia {instance_id}..."
+        context['logger'].info(message)
+        context['session'].send_log_event(context['general_log_stream'], message)
         context['session'].create_log_stream(instance_id)
         message = f"Log Stream creado con nombre: {instance_id}"
         context['logger'].info(message)

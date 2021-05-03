@@ -6,11 +6,11 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 import zipfile
-from datetime import datetime
-from zipfile import ZipFile
-import os
 from os.path import basename
+from zipfile import ZipFile
+
 from botocore.exceptions import ClientError
 from decouple import config
 from ec2_metadata import ec2_metadata
@@ -35,6 +35,9 @@ def main(argv):
     """
     Script to execute ADATRAP
     """
+    # Change timezone
+    os.environ['TZ'] = 'America/Santiago'
+    time.tzset()
 
     logging.basicConfig(level=logging.INFO)
 
@@ -96,7 +99,7 @@ def main(argv):
 
             if bucket_name == "op":
                 config_file_replacements['{po_path}'] = bucket_file.split('.')[0]
-                config_file_replacements['{po_date}'] = ''.join(config_file_replacements['op_path'].split('-'))
+                config_file_replacements['{po_date}'] = ''.join(config_file_replacements['{po_path}'].split('-'))
                 with zipfile.ZipFile(bucket_file, 'r') as zip_ref:
                     service_detail_path = config_file_replacements['{po_path}']
                     send_log_message(f"Descomprimiendo archivo {bucket_file}...")
