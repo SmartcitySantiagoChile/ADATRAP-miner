@@ -28,10 +28,10 @@ class AWSSession:
         The ec2-keypair.pem file will be saved at root folder.
         """
         ec2 = self.session.resource("ec2")
-        outfile = open(f"{name}.pem", "w")
-        key_pair = ec2.create_key_pair(KeyName=name)
-        key_pair_out = str(key_pair.key_material)
-        outfile.write(key_pair_out)
+        with open(f"{name}.pem", "w") as outfile:
+            key_pair = ec2.create_key_pair(KeyName=name)
+            key_pair_out = str(key_pair.key_material)
+            outfile.write(key_pair_out)
 
     def run_ec2_instance(self, date: str) -> dict:
         """
@@ -42,7 +42,7 @@ class AWSSession:
         env_file = self._read_env_file()
         with open('windows_script') as f:
             lines = f.read()
-            lines = lines.replace('EC2DATE', date).replace("ENV_DATA",
+            lines = lines.replace('{EC2_DATE}', date).replace("{ENV_DATA}",
                                                            env_file)
             script = lines
             # TODO: make this configurable
@@ -69,7 +69,7 @@ class AWSSession:
     def _read_env_file(self):
         path = ".env"  # TODO: improve this
         with open(path) as f:
-            lines = f.read()
+            lines = "\n" + f.read()
         return lines
 
     # Cloudwatch methods

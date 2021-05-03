@@ -1,3 +1,4 @@
+import os
 from unittest import TestCase, mock
 
 from botocore.exceptions import ClientError
@@ -110,3 +111,19 @@ class AwsTest(TestCase):
         upper_bound_op_date = '2020-06-27.po.zip'
         self.assertEqual(upper_bound_op_date,
                          self.aws_session._get_available_day_for_op_bucket(available_days, upper_bound_date))
+
+    def test_create_key_pair(self):
+        """
+        Test create key pair method
+        """
+        session = self.aws_session
+
+        # key pair default
+        session.create_key_pair()
+        self.assertTrue(os.path.isfile('ec2-keypair.pem'))
+        os.remove('ec2-keypair.pem')
+
+        # key pair with given name
+        session.create_key_pair('my-key-pair')
+        self.assertTrue(os.path.isfile('my-key-pair.pem'))
+        os.remove('my-key-pair.pem')
