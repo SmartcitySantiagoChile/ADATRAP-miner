@@ -74,21 +74,26 @@ def create_ec2_instance(context, date) -> None:
     DATE is the date to process in the ec2 instance
     """
     context = context.obj
-    status = context['session'].run_ec2_instance(date)
-    instance_id = status["Instances"][0]["InstanceId"]
-    message = f"Instancia creada con id: {instance_id} para el día {date}"
-    context['logger'].info(message)
-    context['session'].send_log_event(context['general_log_stream'], message)
+    try:
+        status = context['session'].run_ec2_instance(date)
+        instance_id = status["Instances"][0]["InstanceId"]
+        message = f"Instancia creada con id: {instance_id} para el día {date}"
+        context['logger'].info(message)
+        context['session'].send_log_event(context['general_log_stream'], message)
 
-    # Create EC2 Log Stream
-    context['session'].create_log_stream(instance_id)
-    message = f"Log Stream creado con nombre: {instance_id}"
-    context['logger'].info(message)
-    context['session'].send_log_event(context['general_log_stream'], message)
+        # Create EC2 Log Stream
+        context['session'].create_log_stream(instance_id)
+        message = f"Log Stream creado con nombre: {instance_id}"
+        context['logger'].info(message)
+        context['session'].send_log_event(context['general_log_stream'], message)
 
-    # Send initial message to EC2 Log Stream
-    message = "Instancia creada correctamente."
-    context['session'].send_log_event(instance_id, message)
+        # Send initial message to EC2 Log Stream
+        message = "Instancia creada correctamente."
+        context['session'].send_log_event(instance_id, message)
+    except botocore.exceptions.ClientError:
+        message = f"No se pudo crear instancia con fecha {date}."
+        context['logger'].info(message)
+        context['session'].send_log_event(context['general_log_stream'], message)
 
 
 @cli.command()
