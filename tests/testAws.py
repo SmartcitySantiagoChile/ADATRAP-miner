@@ -140,3 +140,20 @@ class AwsTest(TestCase):
         # env file should create a new line
         self.assertEqual(expected_lines, env_file)
         os.remove('.env')
+
+    def test_run_ec2_instance(self):
+        """
+        Check run_ec2_instance method
+        """
+        with open(".env", 'w') as env_file:
+            data = ["KEY_PAIR= 1\n", "AMI_ID= 2"]
+            env_file.writelines(data)
+
+        with open("windows_script", "w") as windows_script:
+            data = [
+                '$env_data = "{ENV_DATA}"\n',
+                '$ec2_date = "{EC2_DATE}"\n',
+            ]
+            windows_script.writelines(data)
+        os.remove(".env")
+        os.remove("windows_script")

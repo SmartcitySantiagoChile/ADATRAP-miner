@@ -1,6 +1,6 @@
 <powershell>
-$env_data = "ENV_DATA"
-$ec2_date = "EC2DATE"
+$env_data = "{ENV_DATA}"
+$ec2_date = "{EC2_DATE}"
 $script = New-Object Net.WebClient
 $script | Get-Member
 $script.DownloadString("https://chocolatey.org/install.ps1")
@@ -21,7 +21,6 @@ C:\Python38\python.exe -m pip install -r requirements.txt
 C:\Python38\python.exe -m pip install --editable .
 $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
 echo $env_data > .env
-adatrap_miner create-key-par
 C:\Python38\python.exe windows_miner.py $ec2_date
 echo "Instalaciones correctas"
 </powershell>

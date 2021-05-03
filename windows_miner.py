@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import zipfile
+from datetime import datetime
 from zipfile import ZipFile
 import os
 from os.path import basename
@@ -20,7 +21,7 @@ logger = logging.getLogger(__name__)
 data_path: str = "ADATRAP"
 general_log_stream: str = config("GENERAL_LOG_STREAM")
 executable_adatrap: str = 'pvmts.exe'
-config_file_adatrap: str = 'configuration.par'
+config_file_adatrap: str = 'template-configuration.par'
 config_file_replacements: dict = {
     'op_path': 'op_path_replacement',
     'day_type': 'LABORAL',  # TODO: check
@@ -160,15 +161,47 @@ def main(argv):
             # Compress and upload data
             folder_path = os.path.join(data_path, date)
             send_log_message("Comprimiendo datos...")
-            with ZipFile(f"{date}.zip", 'w') as zipObj:
+            zip_filename = f"{date}.zip"
+            with ZipFile(zip_filename, 'w') as zipObj:
                 # Iterate over all the files in directory
                 for folder_name, subfolders, filenames in os.walk(folder_path):
                     for filename in filenames:
-                        #create conmplete filepath of file in directory
+                        # create conmplete filepath of file in directory
                         file_path = os.path.join(folder_name, filename)
                         # Add file to zip
                         zipObj.write(file_path, basename(file_path))
+
             # Upload to S3
+            # data_bucket = config('DATA_BUCKET_NAME')
+            # if not session.check_bucket_exists(data_bucket):
+            #     send_log_message(f"El bucket \'{data_bucket}\' no existe", error=True)
+            #     exit(1)
+            #
+            # def send_file_to_s3(matched_file, filename):
+            #     send_log_message('{0}: cargando archivo {1}'.format(datetime.now().replace(microsecond=0), matched_file))
+            #     session.send_file_to_bucket(matched_file, filename, bucket_name)
+            #     send_log_message('{0}: carga de archivo {1} finalizada'.format(datetime.now().replace(microsecond=0), matched_file))
+            #
+            # try:
+            #     file_exists = session.check_file_exists(data_bucket, zip_filename)
+            #     if not file_exists:
+            #         send_file_to_s3(matched_file, filename)
+            #         continue
+            #
+            #     if replace:
+            #         send_file_to_s3(matched_file, filename)
+            #     elif ignore_if_exists:
+            #         continue
+            #     else:
+            #         answer = input('file \'{0}\' exists in bucket. Do you want to replace it? (y/n): '.format(filename))
+            #         if answer not in ['y', 'Y']:
+            #             print('file {0} was not replaced'.format(filename))
+            #             continue
+            #         send_file_to_s3(matched_file, filename)
+            # except ClientError as e:
+            #     # ignore it and continue uploading files
+            #     print(e)
+
         error_message = res.stderr.decode("utf-8")
         if error_message:
             send_log_message(error_message)
