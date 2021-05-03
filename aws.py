@@ -67,6 +67,10 @@ class AWSSession:
         return instance.terminate()
 
     def _read_env_file(self):
+        """
+        Read a .env file and add \n at start
+        :return: .env file with \n at start
+        """
         path = ".env"  # TODO: improve this
         with open(path) as f:
             lines = "\n" + f.read()

@@ -127,3 +127,16 @@ class AwsTest(TestCase):
         session.create_key_pair('my-key-pair')
         self.assertTrue(os.path.isfile('my-key-pair.pem'))
         os.remove('my-key-pair.pem')
+
+    def test__read_env_file(self):
+        """
+        Check _read_env_file method
+        """
+        with open(".env", 'w') as env_file:
+            data = ["KEY1= 1\n", "KEY2= 2"]
+            env_file.writelines(data)
+        expected_lines = ["", "KEY1= 1", "KEY2= 2"]
+        env_file = self.aws_session._read_env_file().split("\n")
+        # env file should create a new line
+        self.assertEqual(expected_lines, env_file)
+        os.remove('.env')
