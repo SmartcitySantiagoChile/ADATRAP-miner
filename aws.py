@@ -66,6 +66,12 @@ class AWSSession:
         instance = ec2.Instance(instance_id)
         return instance.terminate()
 
+    def _read_env_file(self):
+        path = ".env"  # TODO: improve this
+        with open(path) as f:
+            lines = f.read()
+        return lines
+
     # Cloudwatch methods
 
     def create_log_stream(self, name: str) -> None:
@@ -118,7 +124,13 @@ class AWSSession:
         )
         return token
 
-    def create_log_group(self, group_name, retention=7):
+    def create_log_group(self, group_name: str, retention: int = 7) -> dict:
+        """
+        Create log group with a given game and retention (in days)
+        :param group_name: name of the log group
+        :param retention: retention of logs in days
+        :return: log response
+        """
         logs = self.session.client("logs")
         response = logs.create_log_group(
             logGroupName=group_name,
@@ -127,21 +139,7 @@ class AWSSession:
         logs.put_retention_policy(logGroupName=group_name, retentionInDays=retention)
         return response
 
-    def get_instance_id(self):
-        import socket
-
-        hostname = socket.gethostname()
-        session = self.session.client("ec2")
-        for reservation in session.describe_instances()["Reservations"]:
-            for instance in reservation["Instances"]:
-                if instance["PrivateDnsName"].startswith(hostname):
-                    return instance["InstanceId"]
-
-    def _read_env_file(self):
-        path = ".env"  # TODO: improve this
-        with open(path) as f:
-            lines = f.read()
-        return lines
+    # S3 methods
 
     def retrieve_obj_list(self, bucket_name):
         s3 = self.session.resource('s3')
@@ -236,3 +234,19 @@ class AWSSession:
         bucket = s3.Bucket(bucket_name)
         bucket.upload_fileobj(obj, obj_key)
         s3.Object(bucket_name, obj_key).Acl().put(ACL='public-read')
+
+    # EC2 inside instance methods
+
+    def get_instance_id(self) -> str:
+        """
+        Get the current instance id (only works inside of an EC2 Instance)
+        :return: instance id
+        """
+        import socket
+
+        hostname = socket.gethostname()
+        session = self.session.client("ec2")
+        for reservation in session.describe_instances()["Reservations"]:
+            for instance in reservation["Instances"]:
+                if instance["PrivateDnsName"].startswith(hostname):
+                    return instance["InstanceId"]
