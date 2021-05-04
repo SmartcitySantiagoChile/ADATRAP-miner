@@ -20,8 +20,8 @@ import aws
 logger = logging.getLogger(__name__)
 data_path: str = "ADATRAP"
 general_log_stream: str = config("GENERAL_LOG_STREAM")
-executable_adatrap: str = 'pvmts.exe'
-config_file_adatrap: str = 'template-configuration.par'
+executable_adatrap: str = 'pvmtsc_v0.1.exe'
+config_file_adatrap: str = 'pvmtsc_v0.1.par'
 config_file_replacements: dict = {
     '{po_path}': 'op_path_replacement',
     'day_type': 'LABORAL',  # TODO: check
@@ -101,6 +101,20 @@ def main(argv):
                     service_detail_path = config_file_replacements['{po_path}']
                     send_log_message(f"Descomprimiendo archivo {bucket_file}...")
                     zip_ref.extractall()
+
+                    folder = config_file_replacements['{po_path}']
+                    subfolders = [f.path for f in os.scandir(folder) if f.is_dir()]
+                    files = [f.path for f in os.scandir(folder) if not f.is_dir()]
+                    for f in files:
+                        with gzip.open(f, 'r') as f_in, open('.'.join(f.split('.')[:2]), 'wb') as f_out:
+                            shutil.copyfileobj(f_in, f_out)
+
+                    for sub in subfolders:
+                        for f in os.listdir(sub):
+                            src = os.path.join(sub, f)
+                            with gzip.open(src, 'r') as f_in, open('.'.join(src.split('.')[:2]), 'wb') as f_out:
+                                shutil.copyfileobj(f_in, f_out)
+
 
                     # get service detail file
                     service_detail_path = os.path.join(service_detail_path, "Diccionario")
