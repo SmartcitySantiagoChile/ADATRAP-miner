@@ -40,5 +40,4 @@ echo $env_data > .env
 
 # run windows miner
 C:\Python38\python.exe windows_miner.py $ec2_date
-echo "Instalaciones correctas"
 </powershell>
