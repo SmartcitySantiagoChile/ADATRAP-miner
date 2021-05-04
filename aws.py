@@ -43,7 +43,8 @@ class AWSSession:
         with open('windows_script') as f:
             lines = f.read()
             lines = lines.replace('{EC2_DATE}', date).replace("{ENV_DATA}",
-                                                           env_file)
+                                                              env_file).replace("{GROUP_NAME}",
+                                                                                config('LOG_GROUP_NAME'))
             script = lines
             # TODO: make this configurable
             instances = ec2.run_instances(
