@@ -217,6 +217,8 @@ class AWSSession:
         available_bucket_days = [files['name'] for files in self.retrieve_obj_list(bucket_name)]
         if bucket_type == "op":
             return self._get_available_day_for_op_bucket(available_bucket_days, date)
+        elif bucket_type == "service_detail":
+            return self._get_available_day_for_service_detail_bucket(available_bucket_days, date)
         else:
             day = [day for day in available_bucket_days if date in day]
             return day[0] if day else None
@@ -266,3 +268,25 @@ class AWSSession:
             for instance in reservation["Instances"]:
                 if instance["PrivateDnsName"].startswith(hostname):
                     return instance["InstanceId"]
+
+    def _get_available_day_for_service_detail_bucket(self, available_bucket_days, date):
+        """
+        Check conditions of date's availability for a given service detail list
+        :param available_bucket_days: date list files for service detail
+        :param date: date to check
+        """
+        formatted_available_bucket_days = [day.split(".")[0].split("_")[1:] for day in available_bucket_days]
+
+        def date_to_iso_format(date):
+            return datetime.date.fromisoformat(f"{date[:4]}-{date[4:6]}-{date[6:8]}")
+
+        formatted_available_bucket_days = [[date_to_iso_format(days[0]), date_to_iso_format(days[1])] for days in
+                                           formatted_available_bucket_days]
+        formatted_available_bucket_days.sort()
+        date = datetime.date.fromisoformat(date)
+        for i in range(len(formatted_available_bucket_days)):
+            start_date = formatted_available_bucket_days[i][0]
+            end_date = formatted_available_bucket_days[i][1]
+            if start_date <= date <= end_date:
+                return available_bucket_days[i]
+        return None

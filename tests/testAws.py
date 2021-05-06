@@ -112,6 +112,28 @@ class AwsTest(TestCase):
         self.assertEqual(upper_bound_op_date,
                          self.aws_session._get_available_day_for_op_bucket(available_days, upper_bound_date))
 
+    def test__get_available_day_for_service_detail_bucket(self):
+        available_days = ['Diccionario-DetalleServicioZP_20200627_20200731.csv.gz', 'Diccionario-DetalleServicioZP_20200801_20200815.csv.gz']
+        lower_bound_date = '2020-01-01'
+        self.assertIsNone(self.aws_session._get_available_day_for_service_detail_bucket(available_days, lower_bound_date))
+
+        limit_lower_bound_date = '2020-06-27'
+        limit_lower_bound_op_date = 'Diccionario-DetalleServicioZP_20200627_20200731.csv.gz'
+        self.assertEqual(limit_lower_bound_op_date,
+                         self.aws_session._get_available_day_for_service_detail_bucket(available_days, limit_lower_bound_date))
+        mid_bound_date = '2020-06-30'
+        mid_bound_date_op_date = 'Diccionario-DetalleServicioZP_20200627_20200731.csv.gz'
+        self.assertEqual(mid_bound_date_op_date,
+                         self.aws_session._get_available_day_for_service_detail_bucket(available_days, mid_bound_date))
+
+        limit_upper_bound_date = '2020-07-31'
+        limit_upper_bound_op_date = 'Diccionario-DetalleServicioZP_20200627_20200731.csv.gz'
+        self.assertEqual(limit_upper_bound_op_date,
+                         self.aws_session._get_available_day_for_service_detail_bucket(available_days, limit_upper_bound_date))
+        upper_bound_date = '2020-08-27'
+        self.assertIsNone(self.aws_session._get_available_day_for_service_detail_bucket(available_days, upper_bound_date))
+
+
     def test_create_key_pair(self):
         """
         Test create key pair method

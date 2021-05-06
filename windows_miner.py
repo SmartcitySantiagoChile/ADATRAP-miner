@@ -79,8 +79,8 @@ def main(argv):
 
     # Download data buckets
     data_buckets = [config('GPS_BUCKET_NAME'), config('FILE_196_BUCKET_NAME'), config('TRANSACTION_BUCKET_NAME'),
-                    config('OP_PROGRAM_BUCKET_NAME')]
-    bucket_names = ["gps", "196", "transaction", "op"]
+                    config('OP_PROGRAM_BUCKET_NAME'), config("SERVICE_DETAIL_BUCKET_NAME")]
+    bucket_names = ["gps", "196", "transaction", "op", "service_detail"]
     for bucket, bucket_name in zip(data_buckets, bucket_names):
         send_log_message(f"Buscando datos de {bucket_name}...")
         if not session.check_bucket_exists(bucket):
@@ -115,18 +115,14 @@ def main(argv):
                             with gzip.open(src, 'r') as f_in, open('.'.join(src.split('.')[:2]), 'wb') as f_out:
                                 shutil.copyfileobj(f_in, f_out)
 
-
-                    # get service detail file
-                    service_detail_path = os.path.join(service_detail_path, "Diccionario")
-                    service_detail_regex = "Diccionario-DetalleServicioZP*"
-                    name = glob.glob(os.path.join(service_detail_path, service_detail_regex))[0]  # TODO: check
-                    send_log_message(f"El archivo de zonas pagas se encuentra en {service_detail_path}")
-                    send_log_message(f"El nombre es {name}")
-                    config_file_replacements["{service_detail_file}"] = name
             else:
                 send_log_message(f"Descomprimiendo archivo {bucket_file}...")
-                with gzip.open(bucket_file, 'r') as f_in, open('.'.join(bucket_file.split('.')[:2]), 'wb') as f_out:
+                csv_name = '.'.join(bucket_file.split('.')[:2])
+                with gzip.open(bucket_file, 'r') as f_in, open(csv_name, 'wb') as f_out:
                     shutil.copyfileobj(f_in, f_out)
+                if bucket_name == "service_detail":
+                    config_file_replacements['{service_detail_file}'] = csv_name
+                    print(csv_name)
         else:
             send_log_message(
                 f"No se ha encontrado un archivo para la fecha {date} en el bucket asociado a {bucket_name}.",
