@@ -175,11 +175,14 @@ def main(argv):
             with ZipFile(zip_filename, 'w') as zipObj:
                 # Iterate over all the files in directory
                 for folder_name, subfolders, filenames in os.walk(folder_path):
-                    for filename in filenames:
-                        # create conmplete filepath of file in directory
-                        file_path = os.path.join(folder_name, filename)
-                        # Add file to zip
-                        zipObj.write(file_path, basename(file_path))
+                    # except kmls, reportes, debug
+                    exception_folders = ["kmls", "reportes", "debug"]
+                    if folder_name not in exception_folders:
+                        for filename in filenames:
+                            # create conmplete filepath of file in directory
+                            file_path = os.path.join(folder_name, filename)
+                            # Add file to zip
+                            zipObj.write(file_path, basename(file_path))
 
             # Upload to S3
             # data_bucket = config('DATA_BUCKET_NAME')
