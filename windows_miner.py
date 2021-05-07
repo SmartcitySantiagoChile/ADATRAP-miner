@@ -186,40 +186,19 @@ def main(argv):
                             zipObj.write(file_path, basename(file_path))
 
             # Upload to S3
-            # data_bucket = config('DATA_BUCKET_NAME')
-            # if not session.check_bucket_exists(data_bucket):
-            #     send_log_message(f"El bucket \'{data_bucket}\' no existe", error=True)
-            #     exit(1)
-            #
-            # def send_file_to_s3(matched_file, filename):
-            #     send_log_message('{0}: cargando archivo {1}'.format(datetime.now().replace(microsecond=0), matched_file))
-            #     session.send_file_to_bucket(matched_file, filename, bucket_name)
-            #     send_log_message('{0}: carga de archivo {1} finalizada'.format(datetime.now().replace(microsecond=0), matched_file))
-            #
-            # try:
-            #     file_exists = session.check_file_exists(data_bucket, zip_filename)
-            #     if not file_exists:
-            #         send_file_to_s3(matched_file, filename)
-            #         continue
-            #
-            #     if replace:
-            #         send_file_to_s3(matched_file, filename)
-            #     elif ignore_if_exists:
-            #         continue
-            #     else:
-            #         answer = input('file \'{0}\' exists in bucket. Do you want to replace it? (y/n): '.format(filename))
-            #         if answer not in ['y', 'Y']:
-            #             print('file {0} was not replaced'.format(filename))
-            #             continue
-            #         send_file_to_s3(matched_file, filename)
-            # except ClientError as e:
-            #     # ignore it and continue uploading files
-            #     print(e)
+            data_bucket = config('DATA_BUCKET_NAME')
+            send_log_message(f"Subiendo datos {zip_filename}...")
+            if not session.check_bucket_exists(data_bucket):
+                send_log_message(f"El bucket \'{data_bucket}\' no existe", error=True)
+            try:
+                session.send_file_to_bucket(zip_filename, zip_filename, data_bucket)
+            except ClientError as e:
+                print(e)
 
-        #error_message = res.stderr.decode("utf-8")
-        #if error_message:
+        error_message = res.stderr.decode("utf-8")
+        if error_message:
             send_log_message(error_message)
-        #send_log_message(f"Proceso ADATRAP para la instancia {instance_id} finalizado.", general=True)
+        send_log_message(f"Proceso ADATRAP para la instancia {instance_id} finalizado.", general=True)
 
 
 if __name__ == "__main__":
