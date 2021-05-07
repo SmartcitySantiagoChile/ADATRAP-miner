@@ -175,9 +175,10 @@ def main(argv):
             with ZipFile(zip_filename, 'w') as zipObj:
                 # Iterate over all the files in directory
                 for folder_name, subfolders, filenames in os.walk(folder_path):
+
                     # except kmls, reportes, debug
                     exception_folders = ["kmls", "reportes", "debug"]
-                    if folder_name not in exception_folders:
+                    if not os.path.split(folder_name)[1] in exception_folders:
                         for filename in filenames:
                             # create conmplete filepath of file in directory
                             file_path = os.path.join(folder_name, filename)
@@ -215,10 +216,10 @@ def main(argv):
             #     # ignore it and continue uploading files
             #     print(e)
 
-        error_message = res.stderr.decode("utf-8")
-        if error_message:
+        #error_message = res.stderr.decode("utf-8")
+        #if error_message:
             send_log_message(error_message)
-        send_log_message(f"Proceso ADATRAP para la instancia {instance_id} finalizado.", general=True)
+        #send_log_message(f"Proceso ADATRAP para la instancia {instance_id} finalizado.", general=True)
 
 
 if __name__ == "__main__":
