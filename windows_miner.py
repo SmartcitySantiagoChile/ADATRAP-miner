@@ -34,7 +34,7 @@ bucket_names = ["gps", "196", "transaction", "op", "service_detail"]
 
 class CommandManager:
 
-    def __init__(self, log, aws_session, general_log_stream, config_file_replacements, config_file_adatrap,
+    def __init__(self, log, aws_session, general_log_stream, config_file_replacements, config_file_adatrap, data_path,
                  debug_state=False):
         self.debug_state = debug_state
         self.logger = log
@@ -42,6 +42,8 @@ class CommandManager:
         self.aws_session = aws_session
         self.instance_id = ec2_metadata.instance_id if not self.debug_state else None
         self.config_file_replacements = config_file_replacements
+        self.config_file_adatrap = config_file_adatrap
+        self.data_path = data_path
 
     def send_log_message(self, message, error=False, general=False):
         """
@@ -152,20 +154,63 @@ class CommandManager:
         self.send_log_message(f"Archivo {date}.par creado")
 
     def run_adatrap(self, date):
+        """
+        Run adatrap executable with 1:15 [h] timeout
+        :param date: date to execute
+        :return: stdout and stderr from adatrap executable
+        """
         self.send_log_message("Ejecutando ADATRAP...")
         if not self.debug_state:
             try:
                 res = subprocess.run(
                     [executable_adatrap, f"{date}.par"],
-                    capture_output=True, timeout=1
+                    capture_output=True, timeout=4500
                 )
                 std_out = res.stdout.decode("utf-8")
                 std_error = res.stderr.decode("utf-8")
                 return std_out, std_error
             except subprocess.TimeoutExpired:
-                self.send_log_message("Proceso ADATRAP no terminó su ejecución", error=True)
+                self.send_log_message("Proceso ADATRAP no terminó su ejecución luego de 1:15.", error=True)
         else:
             return "debug", "debug"
+
+    def compress_adatrap_data(self, date):
+        """
+        Compress output adatrap data into a zip
+        :param date: date (file name)
+        """
+        folder_path = os.path.join(self.data_path, date)
+        self.send_log_message("Comprimiendo datos...")
+        zip_filename = f"{date}.zip"
+        with ZipFile(zip_filename, 'w') as zipObj:
+            # Iterate over all the files in directory
+            for folder_name, subfolders, filenames in os.walk(folder_path):
+                # except kmls, reportes, debug
+                exception_folders = ["kmls", "reportes", "debug"]
+                if not os.path.split(folder_name)[1] in exception_folders:
+                    for filename in filenames:
+                        # create complete filepath of file in directory
+                        file_path = os.path.join(folder_name, filename)
+                        # Add file to zip
+                        zipObj.write(file_path, basename(file_path))
+        self.send_log_message("Compresión de datos exitosa.")
+
+    def upload_output_data_to_s3(self, output_file_name):
+        """
+        Upload to S3 output adatrap data
+        :param output_file_name: filename to upload
+        """
+        output_data_bucket = config('OUTPUT_DATA_BUCKET_NAME')
+        self.send_log_message(f"Subiendo datos {output_file_name} ...")
+        if not self.aws_session.check_bucket_exists(output_data_bucket):
+            self.send_log_message(f"El bucket \'{output_data_bucket}\' no existe", error=True)
+        try:
+            self.aws_session.send_file_to_bucket(output_file_name, output_file_name, output_data_bucket)
+            self.send_log_message("Datos subidos exitosamente.", error=True)
+        except ClientError as e:
+            self.send_log_message(e)
+            self.send_log_message("Error al subir datos.", error=True)
+
 
 def main(argv):
     """
@@ -213,34 +258,13 @@ def main(argv):
     # Run ADATRAP
     stdout, stderr = command_manager.run_adatrap(date)
     if stdout:
-        command_manager.send_log_message(stdout)
-        # Compress and upload data
-        folder_path = os.path.join(data_path, date)
-        command_manager.send_log_message("Comprimiendo datos...")
-        zip_filename = f"{date}.zip"
-        with ZipFile(zip_filename, 'w') as zipObj:
-            # Iterate over all the files in directory
-            for folder_name, subfolders, filenames in os.walk(folder_path):
-                # except kmls, reportes, debug
-                exception_folders = ["kmls", "reportes", "debug"]
-                if not os.path.split(folder_name)[1] in exception_folders:
-                    for filename in filenames:
-                        # create conmplete filepath of file in directory
-                        file_path = os.path.join(folder_name, filename)
-                        # Add file to zip
-                        zipObj.write(file_path, basename(file_path))
-        command_manager.send_log_message("Compresión de datos exitosa.")
+        # Compress output data
+        command_manager.compress_adatrap_data(date)
+        output_file_name = f"{date}.zip"
 
         # Upload to S3
-        output_data_bucket = config('OUTPUT_DATA_BUCKET_NAME')
-        command_manager.send_log_message(f"Subiendo datos {zip_filename}...")
-        if not session.check_bucket_exists(output_data_bucket):
-            command_manager.send_log_message(f"El bucket \'{output_data_bucket}\' no existe", error=True)
-        try:
-            session.send_file_to_bucket(zip_filename, zip_filename, output_data_bucket)
-        except ClientError as e:
-            command_manager.send_log_message(e)
-            command_manager.send_log_message("Error al subir datos.", error=True)
+        command_manager.upload_output_data_to_s3(output_file_name)
+
     if stderr:
         command_manager.send_log_message(stdout)
         command_manager.send_log_message(f"Proceso ADATRAP para la instancia {command_manager.instance_id} finalizado.",
