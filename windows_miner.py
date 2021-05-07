@@ -18,8 +18,8 @@ import aws
 logger = logging.getLogger(__name__)
 data_path: str = "ADATRAP"
 general_log_stream: str = config("GENERAL_LOG_STREAM")
-executable_adatrap: str = 'pvmtsc_v0.1.exe'
-config_file_adatrap: str = 'pvmtsc_v0.1.par'
+executable_adatrap: str = 'pvmtsc_v0.2.exe'
+config_file_adatrap: str = 'pvmtsc_v0.2.par'
 config_file_replacements: dict = {
     '{po_path}': 'op_path_replacement',
     '{service_detail_file}': 'service_detail',
