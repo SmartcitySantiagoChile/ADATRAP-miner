@@ -21,7 +21,7 @@ def check_env_variables():
         "OP_PROGRAM_BUCKET_NAME": "Bucket S3 que contiene datos de programas de operación",
         "FILE_196_BUCKET_NAME": "Bucket S3 que contiene datos 196",
         "TRANSACTION_BUCKET_NAME": "Bucket S3 que contiene datos de transacciones",
-        "DATA_BUCKET_NAME": "Bucket S3 donde se almacenan los resultados de ADATRAP"
+        "OUTPUT_DATA_BUCKET_NAME": "Bucket S3 donde se almacenan los resultados de ADATRAP"
     }
     for key, answer in env_dict.items():
         try:
