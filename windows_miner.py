@@ -157,7 +157,7 @@ class CommandManager:
             try:
                 res = subprocess.run(
                     [executable_adatrap, f"{date}.par"],
-                    capture_output=True, timeout=180
+                    capture_output=True, timeout=1
                 )
                 std_out = res.stdout.decode("utf-8")
                 std_error = res.stderr.decode("utf-8")
@@ -211,7 +211,6 @@ def main(argv):
     command_manager.parse_config_file(date)
 
     # Run ADATRAP
-    command_manager.send_log_message("Ejecutando ADATRAP...")
     stdout, stderr = command_manager.run_adatrap(date)
     if stdout:
         command_manager.send_log_message(stdout)
