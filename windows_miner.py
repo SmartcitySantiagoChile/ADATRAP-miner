@@ -167,6 +167,7 @@ def main(argv):
         # Send ADATRAP Log
         res_message = res.stdout.decode("utf-8")
         if res_message:
+            print(len(res_message))
             send_log_message(res_message)
             # Compress and upload data
             folder_path = os.path.join(data_path, date)
@@ -184,16 +185,19 @@ def main(argv):
                             file_path = os.path.join(folder_name, filename)
                             # Add file to zip
                             zipObj.write(file_path, basename(file_path))
+            send_log_message("Compresión de datos exitosa.")
 
             # Upload to S3
-            data_bucket = config('DATA_BUCKET_NAME')
+            output_data_bucket = config('OUTPUT_DATA_BUCKET_NAME')
             send_log_message(f"Subiendo datos {zip_filename}...")
-            if not session.check_bucket_exists(data_bucket):
-                send_log_message(f"El bucket \'{data_bucket}\' no existe", error=True)
+            if not session.check_bucket_exists(output_data_bucket):
+                send_log_message(f"El bucket \'{output_data_bucket}\' no existe", error=True)
             try:
-                session.send_file_to_bucket(zip_filename, zip_filename, data_bucket)
+                session.send_file_to_bucket(zip_filename, zip_filename, output_data_bucket)
             except ClientError as e:
-                print(e)
+                send_log_message(e)
+                send_log_message("Error al subir datos.", error=True)
+
 
         error_message = res.stderr.decode("utf-8")
         if error_message:
