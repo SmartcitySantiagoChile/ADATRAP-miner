@@ -3,9 +3,11 @@ from datetime import datetime
 
 import botocore
 import click
-from decouple import config, UndefinedValueError
+from decouple import UndefinedValueError
+from decouple import config
 
 import aws
+import windows_manager
 
 
 def check_env_variables():
@@ -129,7 +131,7 @@ def stop_ec2_instance(context, instance_id) -> None:
 @cli.command()
 @click.pass_context
 @click.argument('log_name')
-@click.option('-e', '--end_date', 'end_date',  help='end date to search logs (YYYY-MM-DD).')
+@click.option('-e', '--end_date', 'end_date', help='end date to search logs (YYYY-MM-DD).')
 @click.option('-s', '--start_date', 'start_date', help='start date to search logs (YYYY-MM-DD).')
 @click.option('-o', '--output', 'output', help='filename to save log.')
 def get_log_stream(context, output, start_date, end_date, log_name) -> None:
@@ -164,3 +166,75 @@ def get_log_stream(context, output, start_date, end_date, log_name) -> None:
         message = f"Logs desplegados exitosamente."
         context['logger'].info(message)
 
+
+@cli.command()
+@click.pass_context
+@click.argument('date')
+@click.option('-d', '--debug/--no-debug', 'debug', help='debug mode (works on UNIX).', default=False)
+def execute_adatrap(context, date, debug):
+    """
+    Execute adatrap program.
+
+    DATE is the date to process.
+
+    """
+    # set variables
+    context = context.obj
+    data_path: str = "ADATRAP"
+    general_log_stream: str = context["general_log_stream"]
+    executable_adatrap: str = 'pvmtsc_v0.2.exe'
+    config_file_adatrap: str = 'pvmtsc_v0.2.par'
+    config_file_replacements: dict = {
+        '{po_path}': 'op_path_replacement',
+        '{service_detail_file}': 'service_detail',
+        '{date}': 'date',
+        '{po_date}': 'podate'
+    }
+
+    data_buckets = [config('GPS_BUCKET_NAME'), config('FILE_196_BUCKET_NAME'), config('TRANSACTION_BUCKET_NAME'),
+                    config('OP_PROGRAM_BUCKET_NAME'), config("SERVICE_DETAIL_BUCKET_NAME")]
+    bucket_names = ["gps", "196", "transaction", "op", "service_detail"]
+
+    command_manager = windows_manager.WindowsManager(context["logger"], context['session'], general_log_stream,
+                                                     config_file_replacements,
+                                                     config_file_adatrap, data_path, data_buckets, bucket_names,
+                                                     executable_adatrap,
+                                                     debug)
+
+    # Initial Log
+    command_manager.send_log_message("Instancia inicializada.")
+
+    # Initialization of ADATRAP
+    command_manager.send_log_message("Iniciando proceso ADATRAP...")
+
+    # Download bucket data files
+    command_manager.send_log_message("Iniciando descarga de datos para ADATRAP...")
+    command_manager.download_and_decompress_data_bucket_files(date)
+
+    # Download ADATRAP .exe
+    executable_bucket = config('EXECUTABLES_BUCKET')
+    command_manager.send_log_message("Buscando ejecutable ADATRAP...")
+    command_manager.download_file_from_bucket(executable_adatrap, executable_bucket)
+
+    # Download config file
+    command_manager.send_log_message("Buscando archivo de configuración ADATRAP...")
+    command_manager.download_file_from_bucket(config_file_adatrap, executable_bucket)
+
+    # Process config file
+    command_manager.parse_config_file(date)
+
+    # Run ADATRAP
+    stdout, stderr = command_manager.run_adatrap(date)
+    if stdout:
+        # Compress output data
+        command_manager.compress_adatrap_data(date)
+        output_file_name = f"{date}.zip"
+
+        # Upload to S3
+        command_manager.upload_output_data_to_s3(output_file_name)
+
+    if stderr:
+        command_manager.send_log_message(stdout)
+        command_manager.send_log_message(f"Proceso ADATRAP para la instancia {command_manager.instance_id} finalizado.",
+                                         general=True)
+    stop_ec2_instance(context, command_manager.instance_id)
