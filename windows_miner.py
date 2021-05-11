@@ -43,7 +43,7 @@ def main(argv):
     debug = args.debug
     session = aws.AWSSession()
     command_manager = windows_manager.WindowsManager(logger, session, general_log_stream, config_file_replacements,
-                                                     config_file_adatrap, data_buckets, bucket_names,
+                                                     config_file_adatrap, data_path, data_buckets, bucket_names,
                                                      executable_adatrap,
                                                      debug)
 

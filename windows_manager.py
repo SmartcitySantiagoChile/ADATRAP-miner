@@ -101,7 +101,7 @@ class WindowsManager:
         Download and decompress buckets files with a given date
         :param date: date to check
         """
-        for bucket, bucket_name in zip(self.data_buckets, self.bucket_names):
+        for bucket, bucket_name in zip(self.data_buckets, self.buckets_name):
             self.send_log_message(f"Buscando datos de {bucket_name}...")
             if not self.aws_session.check_bucket_exists(bucket):
                 self.send_log_message(f"El bucket \'{bucket}\' no existe", error=True)
