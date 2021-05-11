@@ -94,93 +94,87 @@ class AWSSession:
         )
         return response['events']
 
+    def create_log_stream(self, name: str) -> None:
+        """
+        Create a Log Stream with given name
+        :param name: name of the Log Stream
+        """
+        logs = self.session.client("logs")
+        logs.create_log_stream(logGroupName=self.log_group, logStreamName=name)
 
-def create_log_stream(self, name: str) -> None:
-    """
-    Create a Log Stream with given name
-    :param name: name of the Log Stream
-    """
-    logs = self.session.client("logs")
-    logs.create_log_stream(logGroupName=self.log_group, logStreamName=name)
+    def send_log_event(self, log_stream_name: str, message: str) -> dict:
+        """
+        Send a Log Event to a Log Stream
+        :param log_stream_name: name of the Log Stream
+        :param message: message to be logged
+          :return: log event response
+        """
+        token = self.get_last_token_event(log_stream_name)
+        logs = self.session.client("logs")
+        timestamp = int(round(time.time() * 1000))
 
+        args = {
+            "logGroupName": self.log_group,
+            "logStreamName": log_stream_name,
+            "logEvents": [
+                {
+                    "timestamp": timestamp,
+                    "message": f"{time.strftime('%Y-%m-%d %H:%M:%S')}\t{message}",
+                }
+            ],
+        }
+        if token:
+            args["sequenceToken"] = token
+        response = logs.put_log_events(**args)
+        return response
 
-def send_log_event(self, log_stream_name: str, message: str) -> dict:
-    """
-    Send a Log Event to a Log Stream
-    :param log_stream_name: name of the Log Stream
-    :param message: message to be logged
-      :return: log event response
-    """
-    token = self.get_last_token_event(log_stream_name)
-    logs = self.session.client("logs")
-    timestamp = int(round(time.time() * 1000))
-
-    args = {
-        "logGroupName": self.log_group,
-        "logStreamName": log_stream_name,
-        "logEvents": [
-            {
-                "timestamp": timestamp,
-                "message": f"{time.strftime('%Y-%m-%d %H:%M:%S')}\t{message}",
-            }
-        ],
-    }
-    if token:
-        args["sequenceToken"] = token
-    response = logs.put_log_events(**args)
-    return response
-
-
-def get_last_token_event(self, log_stream_name: str) -> str:
-    """
-    Get last token event for a log stream. It is needed for an existing Log Stream.
-    :param log_stream_name: Log Stream name
-    """
-    logs = self.session.client("logs")
-    token = (
-        logs.describe_log_streams(
-            logGroupName=self.log_group,
-            logStreamNamePrefix=log_stream_name,
+    def get_last_token_event(self, log_stream_name: str) -> str:
+        """
+        Get last token event for a log stream. It is needed for an existing Log Stream.
+        :param log_stream_name: Log Stream name
+        """
+        logs = self.session.client("logs")
+        token = (
+            logs.describe_log_streams(
+                logGroupName=self.log_group,
+                logStreamNamePrefix=log_stream_name,
+            )
+                .get("logStreams")[0]
+                .get("uploadSequenceToken")
         )
-            .get("logStreams")[0]
-            .get("uploadSequenceToken")
-    )
-    return token
+        return token
 
+    def create_log_group(self, group_name: str, retention: int = 7) -> dict:
+        """
+        Create log group with a given game and retention (in days)
+        :param group_name: name of the log group
+        :param retention: retention of logs in days
+        :return: log response
+        """
+        logs = self.session.client("logs")
+        response = logs.create_log_group(
+            logGroupName=group_name,
+        )
+        logs.put_resource_policy(policyName="string", policyDocument="string")
+        logs.put_retention_policy(logGroupName=group_name, retentionInDays=retention)
+        return response
 
-def create_log_group(self, group_name: str, retention: int = 7) -> dict:
-    """
-    Create log group with a given game and retention (in days)
-    :param group_name: name of the log group
-    :param retention: retention of logs in days
-    :return: log response
-    """
-    logs = self.session.client("logs")
-    response = logs.create_log_group(
-        logGroupName=group_name,
-    )
-    logs.put_resource_policy(policyName="string", policyDocument="string")
-    logs.put_retention_policy(logGroupName=group_name, retentionInDays=retention)
-    return response
+    # S3 methods
 
+    def retrieve_obj_list(self, bucket_name):
+        s3 = self.session.resource('s3')
+        bucket = s3.Bucket(bucket_name)
 
-# S3 methods
+        obj_list = []
+        for obj in bucket.objects.all():
+            size_in_mb = float(obj.size) / (1024 ** 2)
+            url = self._build_url(obj.key, bucket_name)
+            obj_list.append(dict(name=obj.key, size=size_in_mb, last_modified=obj.last_modified, url=url))
 
-def retrieve_obj_list(self, bucket_name):
-    s3 = self.session.resource('s3')
-    bucket = s3.Bucket(bucket_name)
+        return obj_list
 
-    obj_list = []
-    for obj in bucket.objects.all():
-        size_in_mb = float(obj.size) / (1024 ** 2)
-        url = self._build_url(obj.key, bucket_name)
-        obj_list.append(dict(name=obj.key, size=size_in_mb, last_modified=obj.last_modified, url=url))
-
-    return obj_list
-
-
-def _build_url(self, key, bucket_name):
-    return ''.join(['https://s3.amazonaws.com/', bucket_name, '/', urllib.parse.quote(key)])
+    def _build_url(self, key, bucket_name):
+        return ''.join(['https://s3.amazonaws.com/', bucket_name, '/', urllib.parse.quote(key)])
 
 
 def check_bucket_exists(self, bucket_name):
