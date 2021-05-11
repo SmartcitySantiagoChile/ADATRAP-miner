@@ -177,129 +177,129 @@ class AWSSession:
         return ''.join(['https://s3.amazonaws.com/', bucket_name, '/', urllib.parse.quote(key)])
 
 
-def check_bucket_exists(self, bucket_name):
-    s3 = self.session.resource('s3')
-    try:
-        s3.meta.client.head_bucket(Bucket=bucket_name)
-        return True
-    except botocore.exceptions.ClientError as e:
-        # If a client error is thrown, then check that it was a 404 error.
-        # If it was a 404 error, then the bucket does not exist.
-        error_code = int(e.response['Error']['Code'])
-        if error_code == 403:
-            raise ValueError("Private Bucket. Forbidden Access!")
-        elif error_code == 404:
-            return False
+    def check_bucket_exists(self, bucket_name):
+        s3 = self.session.resource('s3')
+        try:
+            s3.meta.client.head_bucket(Bucket=bucket_name)
+            return True
+        except botocore.exceptions.ClientError as e:
+            # If a client error is thrown, then check that it was a 404 error.
+            # If it was a 404 error, then the bucket does not exist.
+            error_code = int(e.response['Error']['Code'])
+            if error_code == 403:
+                raise ValueError("Private Bucket. Forbidden Access!")
+            elif error_code == 404:
+                return False
 
 
-def check_file_exists(self, bucket_name, key):
-    s3 = self.session.resource('s3')
-    try:
-        s3.Object(bucket_name, key).load()
-    except botocore.exceptions.ClientError as e:
-        if e.response['Error']['Code'] == "404":
-            # The object does not exist.
-            return False
+    def check_file_exists(self, bucket_name, key):
+        s3 = self.session.resource('s3')
+        try:
+            s3.Object(bucket_name, key).load()
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == "404":
+                # The object does not exist.
+                return False
+            else:
+                # Something else has gone wrong.
+                raise ValueError(e.response['Error'])
         else:
-            # Something else has gone wrong.
-            raise ValueError(e.response['Error'])
-    else:
-        # The object exists.
-        return True
+            # The object exists.
+            return True
 
 
-def download_object_from_bucket(self, obj_key, bucket_name, file_path):
-    s3 = self.session.resource('s3')
-    bucket = s3.Bucket(bucket_name)
-    bucket.download_file(obj_key, file_path)
+    def download_object_from_bucket(self, obj_key, bucket_name, file_path):
+        s3 = self.session.resource('s3')
+        bucket = s3.Bucket(bucket_name)
+        bucket.download_file(obj_key, file_path)
 
 
-def get_available_day_for_bucket(self, date, bucket_name, bucket_type) -> str:
-    """
-    Check available days in bucket and compare with given date
-    :param bucket_type:
-    :param date: date to check
-    :param bucket_name: name of the bucket
-    :return: name of matched bucket
-    """
-    available_bucket_days = [files['name'] for files in self.retrieve_obj_list(bucket_name)]
-    if bucket_type == "op":
-        return self._get_available_day_for_op_bucket(available_bucket_days, date)
-    elif bucket_type == "service_detail":
-        return self._get_available_day_for_service_detail_bucket(available_bucket_days, date)
-    else:
-        day = [day for day in available_bucket_days if date in day]
-        return day[0] if day else None
+    def get_available_day_for_bucket(self, date, bucket_name, bucket_type) -> str:
+        """
+        Check available days in bucket and compare with given date
+        :param bucket_type:
+        :param date: date to check
+        :param bucket_name: name of the bucket
+        :return: name of matched bucket
+        """
+        available_bucket_days = [files['name'] for files in self.retrieve_obj_list(bucket_name)]
+        if bucket_type == "op":
+            return self._get_available_day_for_op_bucket(available_bucket_days, date)
+        elif bucket_type == "service_detail":
+            return self._get_available_day_for_service_detail_bucket(available_bucket_days, date)
+        else:
+            day = [day for day in available_bucket_days if date in day]
+            return day[0] if day else None
 
 
-def _get_available_day_for_op_bucket(self, available_bucket_days, date):
-    """
-    Check conditions of date's availability for a given op date list
-    :param available_bucket_days: date list for op date
-    :param date: date to check
-    """
-    available_bucket_days = [datetime.date.fromisoformat(day.split('.')[0]) for day in available_bucket_days]
-    available_bucket_days.sort()
-    date = datetime.date.fromisoformat(date)
-    if date < available_bucket_days[0]:
+    def _get_available_day_for_op_bucket(self, available_bucket_days, date):
+        """
+        Check conditions of date's availability for a given op date list
+        :param available_bucket_days: date list for op date
+        :param date: date to check
+        """
+        available_bucket_days = [datetime.date.fromisoformat(day.split('.')[0]) for day in available_bucket_days]
+        available_bucket_days.sort()
+        date = datetime.date.fromisoformat(date)
+        if date < available_bucket_days[0]:
+            return None
+        valid_date = available_bucket_days[0]
+        for available_day in available_bucket_days[1:]:
+            if available_day <= date:
+                valid_date = available_day
+        return f"{valid_date.isoformat()}.po.zip"
+
+
+    def send_file_to_bucket(self, file_path, file_key, bucket_name):
+        s3 = self.session.resource('s3')
+        bucket = s3.Bucket(bucket_name)
+        bucket.upload_file(file_path, file_key)
+
+        return self._build_url(file_key, bucket_name)
+
+
+    def send_object_to_bucket(self, obj, obj_key, bucket_name):
+        s3 = self.session.resource('s3')
+        bucket = s3.Bucket(bucket_name)
+        bucket.upload_fileobj(obj, obj_key)
+        s3.Object(bucket_name, obj_key).Acl().put(ACL='public-read')
+
+
+    # EC2 inside instance methods
+
+    def get_instance_id(self) -> str:
+        """
+        Get the current instance id (only works inside of an EC2 Instance)
+        :return: instance id
+        """
+        import socket
+
+        hostname = socket.gethostname()
+        session = self.session.client("ec2")
+        for reservation in session.describe_instances()["Reservations"]:
+            for instance in reservation["Instances"]:
+                if instance["PrivateDnsName"].startswith(hostname):
+                    return instance["InstanceId"]
+
+
+    def _get_available_day_for_service_detail_bucket(self, available_bucket_days, date):
+        """
+        Check conditions of date's availability for a given service detail list
+        :param available_bucket_days: date list files for service detail
+        :param date: date to check
+        """
+        formatted_available_bucket_days = [day.split(".")[0].split("_")[1:] for day in available_bucket_days]
+
+        def date_to_iso_format(date):
+            return datetime.date.fromisoformat(f"{date[:4]}-{date[4:6]}-{date[6:8]}")
+
+        formatted_available_bucket_days = [[date_to_iso_format(days[0]), date_to_iso_format(days[1])] for days in
+                                           formatted_available_bucket_days]
+        formatted_available_bucket_days.sort()
+        date = datetime.date.fromisoformat(date)
+        for i in range(len(formatted_available_bucket_days)):
+            start_date = formatted_available_bucket_days[i][0]
+            end_date = formatted_available_bucket_days[i][1]
+            if start_date <= date <= end_date:
+                return available_bucket_days[i]
         return None
-    valid_date = available_bucket_days[0]
-    for available_day in available_bucket_days[1:]:
-        if available_day <= date:
-            valid_date = available_day
-    return f"{valid_date.isoformat()}.po.zip"
-
-
-def send_file_to_bucket(self, file_path, file_key, bucket_name):
-    s3 = self.session.resource('s3')
-    bucket = s3.Bucket(bucket_name)
-    bucket.upload_file(file_path, file_key)
-
-    return self._build_url(file_key, bucket_name)
-
-
-def send_object_to_bucket(self, obj, obj_key, bucket_name):
-    s3 = self.session.resource('s3')
-    bucket = s3.Bucket(bucket_name)
-    bucket.upload_fileobj(obj, obj_key)
-    s3.Object(bucket_name, obj_key).Acl().put(ACL='public-read')
-
-
-# EC2 inside instance methods
-
-def get_instance_id(self) -> str:
-    """
-    Get the current instance id (only works inside of an EC2 Instance)
-    :return: instance id
-    """
-    import socket
-
-    hostname = socket.gethostname()
-    session = self.session.client("ec2")
-    for reservation in session.describe_instances()["Reservations"]:
-        for instance in reservation["Instances"]:
-            if instance["PrivateDnsName"].startswith(hostname):
-                return instance["InstanceId"]
-
-
-def _get_available_day_for_service_detail_bucket(self, available_bucket_days, date):
-    """
-    Check conditions of date's availability for a given service detail list
-    :param available_bucket_days: date list files for service detail
-    :param date: date to check
-    """
-    formatted_available_bucket_days = [day.split(".")[0].split("_")[1:] for day in available_bucket_days]
-
-    def date_to_iso_format(date):
-        return datetime.date.fromisoformat(f"{date[:4]}-{date[4:6]}-{date[6:8]}")
-
-    formatted_available_bucket_days = [[date_to_iso_format(days[0]), date_to_iso_format(days[1])] for days in
-                                       formatted_available_bucket_days]
-    formatted_available_bucket_days.sort()
-    date = datetime.date.fromisoformat(date)
-    for i in range(len(formatted_available_bucket_days)):
-        start_date = formatted_available_bucket_days[i][0]
-        end_date = formatted_available_bucket_days[i][1]
-        if start_date <= date <= end_date:
-            return available_bucket_days[i]
-    return None
