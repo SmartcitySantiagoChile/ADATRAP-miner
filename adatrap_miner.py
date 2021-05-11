@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 import botocore
 import click
@@ -128,9 +129,10 @@ def stop_ec2_instance(context, instance_id) -> None:
 @cli.command()
 @click.pass_context
 @click.argument('log_name')
+@click.option('-e', '--end_date', 'end_date',  help='end date to search logs (YYYY-MM-DD).')
 @click.option('-s', '--start_date', 'start_date', help='start date to search logs (YYYY-MM-DD).')
 @click.option('-o', '--output', 'output', help='filename to save log.')
-def get_log_stream(context, output, start_date, log_name) -> None:
+def get_log_stream(context, output, start_date, end_date, log_name) -> None:
     """
     Get logs stream from a given name and given date.
 
@@ -138,12 +140,13 @@ def get_log_stream(context, output, start_date, log_name) -> None:
 
     """
     start_date = "2000-01-01" if not start_date else start_date
+    end_date = datetime.now().strftime("%Y-%m-%d") if not end_date else end_date
     context = context.obj
     message = f"Obteniendo últimos logs..."
     context['logger'].info(message)
     try:
         log_events = context['session'].get_log_stream(config('LOG_GROUP'), log_name,
-                                                       start_date=start_date)
+                                                       start_date=start_date, end_date=end_date)
     except botocore.exceptions.ClientError:
         message = f"No se pueden obtener los logs generales."
         context['logger'].error(message)
