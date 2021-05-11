@@ -39,5 +39,6 @@ $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
 echo $env_data > .env
 
 # run windows miner
-C:\Python38\python.exe windows_miner.py $ec2_date
+#C:\Python38\python.exe windows_miner.py $ec2_date
+adatrap_miner execute-adatrap $ec2_date
 </powershell>
