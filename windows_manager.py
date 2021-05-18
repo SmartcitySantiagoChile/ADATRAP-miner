@@ -14,7 +14,7 @@ from ec2_metadata import ec2_metadata
 class WindowsManager:
 
     def __init__(self, log, aws_session, general_log_stream, config_file_replacements, config_file_adatrap, data_path
-                 , data_buckets, bucket_names, executable_adatrap, debug_state=False):
+                 , data_buckets, bucket_names, executable_adatrap, stop_fun, context, debug_state=False):
         self.debug_state = debug_state
         self.logger = log
         self.general_log_stream = general_log_stream
@@ -26,6 +26,8 @@ class WindowsManager:
         self.data_buckets = data_buckets
         self.buckets_name = bucket_names
         self.executable_adatrap = executable_adatrap
+        self.stop_fun = stop_fun
+        self.context = context
 
     def send_log_message(self, message, error=False, general=False):
         """
@@ -118,7 +120,7 @@ class WindowsManager:
         """
         Finish the instance and the program
         """
-        exit(1)
+        self.stop_fun(self.context, self.instance_id)
 
     def parse_config_file(self, date):
         """
@@ -188,7 +190,7 @@ class WindowsManager:
             self.send_log_message(f"El bucket \'{output_data_bucket}\' no existe", error=True)
         try:
             self.aws_session.send_file_to_bucket(output_file_name, output_file_name, output_data_bucket)
-            self.send_log_message("Datos subidos exitosamente.", error=True)
+            self.send_log_message("Datos subidos exitosamente.")
         except ClientError as e:
             self.send_log_message(e)
             self.send_log_message("Error al subir datos.", error=True)

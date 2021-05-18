@@ -176,7 +176,6 @@ class AWSSession:
     def _build_url(self, key, bucket_name):
         return ''.join(['https://s3.amazonaws.com/', bucket_name, '/', urllib.parse.quote(key)])
 
-
     def check_bucket_exists(self, bucket_name):
         s3 = self.session.resource('s3')
         try:
@@ -190,7 +189,6 @@ class AWSSession:
                 raise ValueError("Private Bucket. Forbidden Access!")
             elif error_code == 404:
                 return False
-
 
     def check_file_exists(self, bucket_name, key):
         s3 = self.session.resource('s3')
@@ -207,12 +205,10 @@ class AWSSession:
             # The object exists.
             return True
 
-
     def download_object_from_bucket(self, obj_key, bucket_name, file_path):
         s3 = self.session.resource('s3')
         bucket = s3.Bucket(bucket_name)
         bucket.download_file(obj_key, file_path)
-
 
     def get_available_day_for_bucket(self, date, bucket_name, bucket_type) -> str:
         """
@@ -231,7 +227,6 @@ class AWSSession:
             day = [day for day in available_bucket_days if date in day]
             return day[0] if day else None
 
-
     def _get_available_day_for_op_bucket(self, available_bucket_days, date):
         """
         Check conditions of date's availability for a given op date list
@@ -249,7 +244,6 @@ class AWSSession:
                 valid_date = available_day
         return f"{valid_date.isoformat()}.po.zip"
 
-
     def send_file_to_bucket(self, file_path, file_key, bucket_name):
         s3 = self.session.resource('s3')
         bucket = s3.Bucket(bucket_name)
@@ -257,13 +251,11 @@ class AWSSession:
 
         return self._build_url(file_key, bucket_name)
 
-
     def send_object_to_bucket(self, obj, obj_key, bucket_name):
         s3 = self.session.resource('s3')
         bucket = s3.Bucket(bucket_name)
         bucket.upload_fileobj(obj, obj_key)
         s3.Object(bucket_name, obj_key).Acl().put(ACL='public-read')
-
 
     # EC2 inside instance methods
 
@@ -280,7 +272,6 @@ class AWSSession:
             for instance in reservation["Instances"]:
                 if instance["PrivateDnsName"].startswith(hostname):
                     return instance["InstanceId"]
-
 
     def _get_available_day_for_service_detail_bucket(self, available_bucket_days, date):
         """

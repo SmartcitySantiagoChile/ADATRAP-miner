@@ -198,7 +198,7 @@ def execute_adatrap(context, date, debug):
     command_manager = windows_manager.WindowsManager(context["logger"], context['session'], general_log_stream,
                                                      config_file_replacements,
                                                      config_file_adatrap, data_path, data_buckets, bucket_names,
-                                                     executable_adatrap,
+                                                     executable_adatrap, stop_ec2_instance, context,
                                                      debug)
 
     # Initial Log
