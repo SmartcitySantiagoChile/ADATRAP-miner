@@ -232,9 +232,11 @@ def execute_adatrap(context, date, debug):
 
         # Upload to S3
         command_manager.upload_output_data_to_s3(output_file_name)
-
+        command_manager.send_log_message(f"Proceso ADATRAP para la instancia {command_manager.instance_id} finalizado.",
+                                         general=True)
     if stderr:
         command_manager.send_log_message(stderr)
         command_manager.send_log_message(f"Proceso ADATRAP para la instancia {command_manager.instance_id} finalizado.",
                                          general=True)
+    command_manager.send_log_message("Finalizando instancia...")
     stop_ec2_instance(context, command_manager.instance_id)
