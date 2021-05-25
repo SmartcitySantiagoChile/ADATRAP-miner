@@ -110,11 +110,11 @@ DATA_BUCKET_NAME= Bucket S3 donde se almacenan los resultados de ADATRAP
 
 Para la creación de instancias EC2 y el manejo de estas se requiere tener una **keypar** para poder acceder a las instancias creadas en python. Para esto el programa tiene un comando que permite la creación de un keypar dado los datos de usuario en el archivo .env.
 
-Este comando crea una keypar llamada **ec2-keypair**, la cual se registra en AWS y se almacena localmente en la raíz del proyecto.
+Este comando crea una keypair con el nombre dado como argumento o **ec2-keypair** por defecto, la cual se registra en AWS y se almacena localmente en la raíz del proyecto.
 
 Para crear un keypar se debe ejecutar:
 
-    python3 adatrap_miner.py -c
+    adatrap_miner create-key-pair key-pair-name
 
 Si todo resulta correcto se obtendrá el siguiente mensaje:
 
@@ -128,6 +128,8 @@ En caso de que la keypar exista el programa arrojará un error:
 Ya habiendo sido creada la keypar, esta se encontrará disponible en el panel de administración EC2 de AWS:
 
 ![keypar](docs/img/keypar.png)
+
+Después de crear la key-pair es importante agregar su nombre en el archivo .env
     
 
 ## Uso
