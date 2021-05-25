@@ -6,7 +6,7 @@ Programa que se encarga de descargar y procesar datos de viajes y transacciones 
 
 El proyecto se encuentra desarrollado en Python 3.8 y utiliza los siguientes servicios de Amazon Web Services para su
 funcionamiento:
-[EC2](aws.amazon.com/aws/ec2), [S3]() y [Cloudwatch]().
+[EC2](aws.amazon.com/aws/ec2), [S3](https://aws.amazon.com/es/s3/) y [Cloudwatch](https://aws.amazon.com/es/s3/).
 
 ### Requerimientos
 
@@ -38,9 +38,11 @@ Además para agregar el comando `adatrap_miner` a las variables de ambiente se d
 
     pip install -e .
 
-### Usuario AWS
+#### Creación de usuario AWS
 
-Para el funcionamiento del script se requieren las credenciales de un usuario AWS con permisos **AmazonEC2FullAcces**
+El funcionamiento del programa se requieren las credenciales de un usuario AWS con permisos **AmazonEC2FullAccess**,
+**AmazonS3FullAccess**, **AmazonS3FullAccess**, **CloudWatchAgentServerPolicy** y **CloudWatchAgentAdminPolicy**.
+Los siguientes pasos detallan como crear un usuario AWS con los permisos necesarios.
 
 #### 1) Crear usuario
 
@@ -57,9 +59,7 @@ avanzar al siguiente paso haciendo click en el botón **Next: permissions**
 #### 3) Permisos de Usuario
 
 En esta sección se darán los permisos de EC2, S3 y Cloudwatch al usuario. Para esto debe seleccionar la opción **Attach
-existing policies directly**. Posteriormente en el cuadro de búsqueda buscar **ec2fullaccess** y marcar la casilla **
-AmazonEC2FullAccess**, **AmazonS3FullAccess**, **CloudWatchAgentAdminPolicy**, **CloudWatchAgentServerPolicy** y **
-AmazonSSMFullAccess**
+existing policies directly**. Posteriormente en el cuadro de búsqueda buscar **EC2Fullaccess** y marcar las casillas **AmazonEC2FullAccess**, **AmazonS3FullAccess**, **CloudWatchAgentAdminPolicy**, **CloudWatchAgentServerPolicy** y **AmazonSSMFullAccess**
 
 Finalmente se puede ir al siguiente paso **Next: Tags**.
 
@@ -67,8 +67,7 @@ Finalmente se puede ir al siguiente paso **Next: Tags**.
 
 #### 4) Tags (Opcional)
 
-Opcionalmente se pueden añadir etiquetas para identificar o almacena datos referente al usuario. Ir al paso siguiente **
-Next Review**.
+Opcionalmente se pueden añadir etiquetas para identificar o almacena datos referente al usuario. Ir al paso siguiente **Next Review**.
 ![aws-paso-4](docs/img/4-add-tags.png)
 
 #### 5) Review
@@ -98,33 +97,33 @@ aplicación [CloudWatch](https://us-east-2.console.aws.amazon.com/cloudwatch/hom
 Se debe crear un archivo .env en la raíz del proyecto el cual incluirá las credenciales y otra información en el
 siguiente formato:
 
-AWS_ACCESS_KEY_ID= Id de acceso creado en el paso anterior.
-
-AWS_SECRET_ACCESS_KEY= Clave de acceso creado en el paso anterior
-
-REGION_NAME= Región donde se ubicará la instancia EC2 (Ejemplo: us-east-2)
-
-AMI_ID= Id de la imagen a utilizar en la instancia EC2
-
-INSTANCE_TYPE= Nombre de la máquina ec2 a utilizar (ej: t2.micro)
-
-KEY_PAIR= Par de claves para acceso ec2 (Si se desea crear una nueva key pair dejar un nombre por defecto.)
-
-LOG_GROUP= Nombre de log de grupo Cloudwatch
-
-GENERAL_LOG_STREAM= Id para el log general
-
-EXECUTABLES_BUCKET= Bucket donde se encuentra ejecutable ADATRAP
-
-GPS_BUCKET_NAME= Bucket de gps
-
-OP_PROGRAM_BUCKET_NAME= Bucket de po
-
-FILE_196_BUCKET_NAME= Bucket de archivo 196
-
-TRANSACTION_BUCKET_NAME= Bucket de transacciones
-
-DATA_BUCKET_NAME= Bucket S3 donde se almacenan los resultados de ADATRAP
+    AWS_ACCESS_KEY_ID= Id de acceso creado en el paso anterior.
+    
+    AWS_SECRET_ACCESS_KEY= Clave de acceso creado en el paso anterior
+    
+    REGION_NAME= Región donde se ubicará la instancia EC2 (Ejemplo: us-east-2)
+    
+    AMI_ID= Id de la imagen a utilizar en la instancia EC2
+    
+    INSTANCE_TYPE= Nombre de la máquina ec2 a utilizar (ej: t2.micro)
+    
+    KEY_PAIR= Par de claves para acceso ec2 (Si se desea crear una nueva key pair dejar un nombre por defecto.)
+    
+    LOG_GROUP= Nombre de log de grupo Cloudwatch
+    
+    GENERAL_LOG_STREAM= Id para el log general
+    
+    EXECUTABLES_BUCKET= Bucket donde se encuentra ejecutable ADATRAP
+    
+    GPS_BUCKET_NAME= Bucket de gps
+    
+    OP_PROGRAM_BUCKET_NAME= Bucket de po
+    
+    FILE_196_BUCKET_NAME= Bucket de archivo 196
+    
+    TRANSACTION_BUCKET_NAME= Bucket de transacciones
+    
+    DATA_BUCKET_NAME= Bucket S3 donde se almacenan los resultados de ADATRAP
 
 ### Creación de Key Pair
 
@@ -159,27 +158,36 @@ Para el funcionamiento de adatrap-Miner se requiere la creación de un log group
 stream es una secuencia de eventos de log que se comparten en la misma fuente, mientras que un log group es un conjunto
 de log streams.
 
-Por lo tanto adatrap-Miner utilizará el log group para crear log streams asociados a las instancias EC2 creadas. Por otra parte utilizará el log stream creado como un log general de eventos asociados al proyecto.
-
+Por lo tanto adatrap-Miner utilizará el log group para crear log streams asociados a las instancias EC2 creadas. Por
+otra parte utilizará el log stream creado como un log general de eventos asociados al proyecto.
 
 ### Log Group
 
-Para crear un Log Group se debe acceder a la plataforma [Cloudwatch](https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2#logsV2:log-groups) y seleccionar la opción **Create log group**.
+Para crear un Log Group se debe acceder a la
+plataforma [Cloudwatch](https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2#logsV2:log-groups) y
+seleccionar la opción **Create log group**.
 
-Se debe ingresar un nombre en *Log group name*.
-En la sección *Retention setting* se debe seleccionar la opción "1 week". Esto permitirá que los logs se almacenen durante una semana como máximo.
+Se debe ingresar un nombre en *Log group name*. En la sección *Retention setting* se debe seleccionar la opción "1 week"
+. Esto permitirá que los logs se almacenen durante una semana como máximo.
 
 ![log-group](docs/img/log-group.png)
 
 Finalmente se debe seleccionar la opción *create*
 
 Es importante agregar el nombre del log group al parámetro *LOG_GROUP* del archivo *.env*
+
 ### Log Stream
-Para agregar un log stream se debe ingresar al log group creado desde la interfaz de Cloudwatch y seleccionar la opción *Create log stream*.
+
+Para agregar un log stream se debe ingresar al log group creado desde la interfaz de Cloudwatch y seleccionar la
+opción *Create log stream*.
 
 ![log-stream](docs/img/log-stream.png)
 
 Finalmente también se debe agregar el nombre a la variable *GENERAL_LOG_STREAM* del archivo *.env*.
+
+## Buckets S3
+
+Para el funcionamiento del programa se requiere que
 
 ## Uso
 
@@ -190,8 +198,9 @@ Para ejecutar adatrap_miner se deben ejecutar el comando con la fecha en formato
 ## Comandos disponibles
 
 ### Detener instancia EC2
+
 Para detener una instancia EC2 se debe ejecutar
-    
+
     adatrap_miner stop-ec2-instance ID
 
 Donde *ID* es el id de la instancia.
@@ -202,8 +211,8 @@ Para obtener los logs asociados a un log stream se debe ejecutar
 
     adatrap_miner get-log-stream LOGNAME DATE
 
-Donde *LOGNAME* es el nombre del log stream y *DATE* es desde que fecha.
-Si se quiere almacenar en un archivo se debe utilizar la variable -o
+Donde *LOGNAME* es el nombre del log stream y *DATE* es desde que fecha. Si se quiere almacenar en un archivo se debe
+utilizar la variable -o
 
     adatrap_miner get-log-stream LOGNAME DATE -o OUTPUTNAME
 
