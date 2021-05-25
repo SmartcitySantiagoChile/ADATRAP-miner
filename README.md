@@ -185,5 +185,26 @@ Finalmente también se debe agregar el nombre a la variable *GENERAL_LOG_STREAM*
 
 Para ejecutar adatrap_miner se deben ejecutar el comando con la fecha en formato YYYY-MM-DD
 
-    python3 adatrap_miner 2021-04-22
+    adatrap_miner create-ec2-instance 2021-04-22
+
+## Comandos disponibles
+
+### Detener instancia EC2
+Para detener una instancia EC2 se debe ejecutar
+    
+    adatrap_miner stop-ec2-instance ID
+
+Donde *ID* es el id de la instancia.
+
+### Obtener logs
+
+Para obtener los logs asociados a un log stream se debe ejecutar
+
+    adatrap_miner get-log-stream LOGNAME DATE
+
+Donde *LOGNAME* es el nombre del log stream y *DATE* es desde que fecha.
+Si se quiere almacenar en un archivo se debe utilizar la variable -o
+
+    adatrap_miner get-log-stream LOGNAME DATE -o OUTPUTNAME
+
 

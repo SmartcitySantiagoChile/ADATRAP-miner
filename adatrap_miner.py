@@ -16,6 +16,7 @@ def check_env_variables():
         "AWS_SECRET_ACCESS_KEY": "Clave de acceso a AWS",
         "REGION_NAME": "Region de acceso a AWS",
         "AMI_ID": "Id de AMI (Amazon Machine Image) a utilizar",
+        "INSTANCE_TYPE": "Máquina EC2 a utilizar",
         "KEY_PAIR": "Par de claves de acceso a EC2 AWS",
         "LOG_GROUP": "Nombre de log de grupo Cloudwatch",
         "GENERAL_LOG_STREAM": "Nombre del log stream general de Cloudwatch",
@@ -24,7 +25,8 @@ def check_env_variables():
         "OP_PROGRAM_BUCKET_NAME": "Bucket S3 que contiene datos de programas de operación",
         "FILE_196_BUCKET_NAME": "Bucket S3 que contiene datos 196",
         "TRANSACTION_BUCKET_NAME": "Bucket S3 que contiene datos de transacciones",
-        "OUTPUT_DATA_BUCKET_NAME": "Bucket S3 donde se almacenan los resultados de ADATRAP"
+        "OUTPUT_DATA_BUCKET_NAME": "Bucket S3 donde se almacenan los resultados de ADATRAP",
+        "SERVICE_DETAIL_BUCKET_NAME": "Bucket S3 donde se almacenan los archivos de detalle de servicio"
     }
     for key, answer in env_dict.items():
         try:
@@ -173,7 +175,7 @@ def get_log_stream(context, output, start_date, end_date, log_name) -> None:
 @click.option('-d', '--debug/--no-debug', 'debug', help='debug mode (works on UNIX).', default=False)
 def execute_adatrap(context, date, debug):
     """
-    Execute adatrap program.
+    Execute adatrap program. (Works only in Windows)
 
     DATE is the date to process.
 

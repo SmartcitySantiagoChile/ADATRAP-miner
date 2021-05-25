@@ -51,7 +51,7 @@ class AWSSession:
                 ImageId=config("AMI_ID"),
                 MinCount=1,
                 MaxCount=1,
-                InstanceType="t2.micro",
+                InstanceType=config("INSTANCE_TYPE"),
                 KeyName=config("KEY_PAIR"),
                 UserData=script,
                 Monitoring={"Enabled": True},
