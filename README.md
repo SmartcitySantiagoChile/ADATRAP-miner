@@ -136,6 +136,8 @@ OUTPUT_DATA_BUCKET_NAME=
 SERVICE_DETAIL_BUCKET_NAME=
 ```
 
+Los valores de cada una de las variables será explicado en los pasos siguientes.
+
 ### Creación de Key Pair
 
 Para la creación de instancias EC2 y el manejo de estas se requiere tener una **keypar** para poder acceder a las
