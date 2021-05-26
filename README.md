@@ -89,9 +89,22 @@ El usuario ha sido creado exitosamente, por lo que es importante guardar sus cre
 Para guardar registro de los logs se requiere la creación de un Log Group y un Log Stream. Sus nombres serán utilizados
 más adelante para mantener registro de las instancias EC2 a crear y el funcionamiento general del software.
 
-#### Crear Log Group
+#### Crear `Log Group`
 
-Se debe acceder a la consola de AWS en la aplicación [CloudWatch](https://console.aws.amazon.com/cloudwatch/home).
+Se debe acceder a la consola de AWS en la aplicación [CloudWatch](https://console.aws.amazon.com/cloudwatch/home). 
+Seleccionar la opción "Monitor using your existing system, application and custom log files.", dentro de la página 
+presionar el botón **Create log group**, aparecerá un formulario donde se deben indicar los siguientes valores:
+- Log group name: se recomienda usar `adatrap-miner`
+- Retention setting: se recomienda seleccionar el valor `1 week (7 days)` 
+- (Opcional) agregar tags
+
+Presionar el botón **Create**.
+
+#### Crear `log stream`
+
+Una vez creado el log group es necesario generar dentro de el un log stream, esto se realiza en la vista detalle del 
+log group, en la pestaña "Log stream" presionando el botón **Create log stream**, se recomienda el nombre 
+`adatrap-miner-stream`.
 
 ### .env
 
