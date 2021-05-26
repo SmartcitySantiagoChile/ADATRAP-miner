@@ -130,7 +130,7 @@ FILE_196_BUCKET_NAME=
 TRANSACTION_BUCKET_NAME=
 
 # Bucket S3 donde se almacenan los resultados de ADATRAP
-DATA_BUCKET_NAME=
+OUTPUT_DATA_BUCKET_NAME=
 ```
 
 ### Creación de Key Pair
