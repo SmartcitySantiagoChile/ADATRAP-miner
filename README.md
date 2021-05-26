@@ -46,20 +46,21 @@ Para el funcionamiento del script se requieren las credenciales de un usuario AW
 
 Para crear un usuario nuevo se debe acceder a la plataforma [IAM](https://console.aws.amazon.com/iam/home#/home) de AWS
 en la sección [usuarios](https://console.aws.amazon.com/iam/home#/users) y seleccionar la opción **Add User**:
+
 ![aws-paso-1](docs/img/1-add-user.png)
 
 #### 2) Nombrar usuario
 
 Posteriormente se debe escribir un nombre de usuario en **User name**, marcar la casilla **Programmatic access** y
-avanzar al siguiente paso haciendo click en el botón **Next: permissions**
+avanzar al siguiente paso haciendo click en el botón **Next: permissions**.
+
 ![aws-paso-2](docs/img/2-name-user.png)
 
 #### 3) Permisos de Usuario
 
 En esta sección se darán los permisos de EC2, S3 y Cloudwatch al usuario. Para esto debe seleccionar la opción **Attach
-existing policies directly**. Posteriormente en el cuadro de búsqueda buscar **ec2fullaccess** y marcar la casilla **
-AmazonEC2FullAccess**, **AmazonS3FullAccess**, **CloudWatchAgentAdminPolicy**, **CloudWatchAgentServerPolicy** y **
-AmazonSSMFullAccess**
+existing policies directly**. Posteriormente en el cuadro de búsqueda buscar y seleccionar las siguientes palabras: **AmazonEC2FullAccess**, **AmazonS3FullAccess**, **CloudWatchAgentAdminPolicy**, **CloudWatchAgentServerPolicy**
+y **AmazonSSMFullAccess**
 
 Finalmente se puede ir al siguiente paso **Next: Tags**.
 
@@ -67,8 +68,8 @@ Finalmente se puede ir al siguiente paso **Next: Tags**.
 
 #### 4) Tags (Opcional)
 
-Opcionalmente se pueden añadir etiquetas para identificar o almacena datos referente al usuario. Ir al paso siguiente **
-Next Review**.
+Opcionalmente se pueden añadir etiquetas para identificar o almacenar datos referentes al usuario. Ir al paso siguiente **Next Review**.
+
 ![aws-paso-4](docs/img/4-add-tags.png)
 
 #### 5) Review
@@ -159,23 +160,28 @@ Para el funcionamiento de adatrap-Miner se requiere la creación de un log group
 stream es una secuencia de eventos de log que se comparten en la misma fuente, mientras que un log group es un conjunto
 de log streams.
 
-Por lo tanto adatrap-Miner utilizará el log group para crear log streams asociados a las instancias EC2 creadas. Por otra parte utilizará el log stream creado como un log general de eventos asociados al proyecto.
-
+Por lo tanto adatrap-Miner utilizará el log group para crear log streams asociados a las instancias EC2 creadas. Por
+otra parte utilizará el log stream creado como un log general de eventos asociados al proyecto.
 
 ### Log Group
 
-Para crear un Log Group se debe acceder a la plataforma [Cloudwatch](https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2#logsV2:log-groups) y seleccionar la opción **Create log group**.
+Para crear un Log Group se debe acceder a la
+plataforma [Cloudwatch](https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2#logsV2:log-groups) y
+seleccionar la opción **Create log group**.
 
-Se debe ingresar un nombre en *Log group name*.
-En la sección *Retention setting* se debe seleccionar la opción "1 week". Esto permitirá que los logs se almacenen durante una semana como máximo.
+Se debe ingresar un nombre en *Log group name*. En la sección *Retention setting* se debe seleccionar la opción "1 week"
+. Esto permitirá que los logs se almacenen durante una semana como máximo.
 
 ![log-group](docs/img/log-group.png)
 
 Finalmente se debe seleccionar la opción *create*
 
 Es importante agregar el nombre del log group al parámetro *LOG_GROUP* del archivo *.env*
+
 ### Log Stream
-Para agregar un log stream se debe ingresar al log group creado desde la interfaz de Cloudwatch y seleccionar la opción *Create log stream*.
+
+Para agregar un log stream se debe ingresar al log group creado desde la interfaz de Cloudwatch y seleccionar la
+opción *Create log stream*.
 
 ![log-stream](docs/img/log-stream.png)
 
@@ -190,8 +196,9 @@ Para ejecutar adatrap_miner se deben ejecutar el comando con la fecha en formato
 ## Comandos disponibles
 
 ### Detener instancia EC2
+
 Para detener una instancia EC2 se debe ejecutar
-    
+
     adatrap_miner stop-ec2-instance ID
 
 Donde *ID* es el id de la instancia.
@@ -202,8 +209,8 @@ Para obtener los logs asociados a un log stream se debe ejecutar
 
     adatrap_miner get-log-stream LOGNAME DATE
 
-Donde *LOGNAME* es el nombre del log stream y *DATE* es desde que fecha.
-Si se quiere almacenar en un archivo se debe utilizar la variable -o
+Donde *LOGNAME* es el nombre del log stream y *DATE* es desde que fecha. Si se quiere almacenar en un archivo se debe
+utilizar la variable -o
 
     adatrap_miner get-log-stream LOGNAME DATE -o OUTPUTNAME
 
