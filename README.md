@@ -91,8 +91,7 @@ más adelante para mantener registro de las instancias EC2 a crear y el funciona
 
 #### Crear Log Group
 
-Se debe acceder a la consola de AWS en la
-aplicación [CloudWatch](https://us-east-2.console.aws.amazon.com/cloudwatch/home)
+Se debe acceder a la consola de AWS en la aplicación [CloudWatch](https://console.aws.amazon.com/cloudwatch/home).
 
 ### .env
 
