@@ -84,28 +84,6 @@ El usuario ha sido creado exitosamente, por lo que es importante guardar sus cre
 . Ambas credenciales **Access key ID** y **Secret access key** serán utilizadas para la configuración del proyecto.
 ![aws-paso-6](docs/img/6-id-secret-key.png)
 
-### Logs
-
-Para guardar registro de los logs se requiere la creación de un Log Group y un Log Stream. Sus nombres serán utilizados
-más adelante para mantener registro de las instancias EC2 a crear y el funcionamiento general del software.
-
-#### Crear `Log Group`
-
-Se debe acceder a la consola de AWS en la aplicación [CloudWatch](https://console.aws.amazon.com/cloudwatch/home). 
-Seleccionar la opción "Monitor using your existing system, application and custom log files.", dentro de la página 
-presionar el botón **Create log group**, aparecerá un formulario donde se deben indicar los siguientes valores:
-- Log group name: se recomienda usar `adatrap-miner`
-- Retention setting: se recomienda seleccionar el valor `1 week (7 days)` 
-- (Opcional) agregar tags
-
-Presionar el botón **Create**.
-
-#### Crear `log stream`
-
-Una vez creado el log group es necesario generar dentro de el un log stream, esto se realiza en la vista detalle del 
-log group, en la pestaña "Log stream" presionando el botón **Create log stream**, se recomienda el nombre 
-`adatrap-miner-stream`.
-
 ### .env
 
 Se debe crear un archivo .env en la raíz del proyecto el cual incluirá las credenciales y otra información en el
@@ -118,7 +96,7 @@ AWS_ACCESS_KEY_ID=
 # Clave de acceso creado en el paso anterior
 AWS_SECRET_ACCESS_KEY= 
 
-# Región donde se ubicará la instancia EC2 (Ejemplo: us-east-2)
+# Región donde se ubicará la instancia EC2 (Ejemplo: us-east-1)
 REGION_NAME= 
 
 # Id de la imagen a utilizar en la instancia EC2
@@ -159,7 +137,7 @@ DATA_BUCKET_NAME=
 
 Para la creación de instancias EC2 y el manejo de estas se requiere tener una **keypar** para poder acceder a las
 instancias creadas en python. Para esto el programa tiene un comando que permite la creación de un keypar dado los datos
-de usuario en el archivo .env.
+de usuario en el archivo .env (variables **AWS_ACCESS_KEY_ID** y **AWS_SECRET_ACCESS_KEY**).
 
 Este comando crea una keypair con el nombre dado como argumento o **ec2-keypair** por defecto, la cual se registra en
 AWS y se almacena localmente en la raíz del proyecto.
@@ -194,7 +172,7 @@ otra parte utilizará el log stream creado como un log general de eventos asocia
 ### Log Group
 
 Para crear un Log Group se debe acceder a la
-plataforma [Cloudwatch](https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2#logsV2:log-groups) y
+plataforma [Cloudwatch](https://us-east-1.console.aws.amazon.com/cloudwatch/home?region=us-east-1#logsV2:log-groups) y
 seleccionar la opción **Create log group**.
 
 Se debe ingresar un nombre en *Log group name*. En la sección *Retention setting* se debe seleccionar la opción "1 week"
