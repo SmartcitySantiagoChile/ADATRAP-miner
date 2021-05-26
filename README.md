@@ -111,33 +111,49 @@ log group, en la pestaña "Log stream" presionando el botón **Create log stream
 Se debe crear un archivo .env en la raíz del proyecto el cual incluirá las credenciales y otra información en el
 siguiente formato:
 
-AWS_ACCESS_KEY_ID= Id de acceso creado en el paso anterior.
+```
+# Id de acceso creado en el paso anterior.
+AWS_ACCESS_KEY_ID= 
 
-AWS_SECRET_ACCESS_KEY= Clave de acceso creado en el paso anterior
+# Clave de acceso creado en el paso anterior
+AWS_SECRET_ACCESS_KEY= 
 
-REGION_NAME= Región donde se ubicará la instancia EC2 (Ejemplo: us-east-2)
+# Región donde se ubicará la instancia EC2 (Ejemplo: us-east-2)
+REGION_NAME= 
 
-AMI_ID= Id de la imagen a utilizar en la instancia EC2
+# Id de la imagen a utilizar en la instancia EC2
+AMI_ID= 
 
-INSTANCE_TYPE= Nombre de la máquina ec2 a utilizar (ej: t2.micro)
+# Nombre de la máquina ec2 a utilizar (ej: t2.micro)
+INSTANCE_TYPE= 
 
-KEY_PAIR= Par de claves para acceso ec2 (Si se desea crear una nueva key pair dejar un nombre por defecto.)
+# Par de claves para acceso ec2 (Si se desea crear una nueva key pair dejar un nombre por defecto.)
+KEY_PAIR= 
 
-LOG_GROUP= Nombre de log de grupo Cloudwatch
+# Nombre de log de grupo Cloudwatch
+LOG_GROUP= 
 
-GENERAL_LOG_STREAM= Id para el log general
+# Id para el log general
+GENERAL_LOG_STREAM= 
 
-EXECUTABLES_BUCKET= Bucket donde se encuentra ejecutable ADATRAP
+# Bucket donde se encuentra ejecutable ADATRAP
+EXECUTABLES_BUCKET= 
 
-GPS_BUCKET_NAME= Bucket de gps
+# Bucket de gps
+GPS_BUCKET_NAME=
 
-OP_PROGRAM_BUCKET_NAME= Bucket de po
+# Bucket de po
+OP_PROGRAM_BUCKET_NAME=
 
-FILE_196_BUCKET_NAME= Bucket de archivo 196
+# Bucket de archivo 196
+FILE_196_BUCKET_NAME=
 
-TRANSACTION_BUCKET_NAME= Bucket de transacciones
+# Bucket de transacciones
+TRANSACTION_BUCKET_NAME=
 
-DATA_BUCKET_NAME= Bucket S3 donde se almacenan los resultados de ADATRAP
+# Bucket S3 donde se almacenan los resultados de ADATRAP
+DATA_BUCKET_NAME=
+```
 
 ### Creación de Key Pair
 
