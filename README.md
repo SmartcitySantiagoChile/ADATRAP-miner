@@ -131,6 +131,9 @@ TRANSACTION_BUCKET_NAME=
 
 # Bucket S3 donde se almacenan los resultados de ADATRAP
 OUTPUT_DATA_BUCKET_NAME=
+
+# Bucket S3 donde se almacena el detalle de los servicios
+SERVICE_DETAIL_BUCKET_NAME=
 ```
 
 ### Creación de Key Pair
