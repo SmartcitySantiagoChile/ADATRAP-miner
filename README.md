@@ -40,7 +40,7 @@ Además para agregar el comando `adatrap_miner` a las variables de ambiente se d
 
 ### Usuario AWS
 
-Para el funcionamiento del script se requieren las credenciales de un usuario AWS con permisos **AmazonEC2FullAcces**
+Para el funcionamiento del script se requieren las credenciales de un usuario AWS con permisos **AmazonEC2FullAccess**.
 
 #### 1) Crear usuario
 
