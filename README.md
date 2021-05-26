@@ -6,7 +6,7 @@ Programa que se encarga de descargar y procesar datos de viajes y transacciones 
 
 El proyecto se encuentra desarrollado en Python 3.8 y utiliza los siguientes servicios de Amazon Web Services para su
 funcionamiento:
-[EC2](aws.amazon.com/aws/ec2), [S3]() y [Cloudwatch]().
+[EC2](https://aws.amazon.com/ec2/), [S3](https://aws.amazon.com/s3/) y [Cloudwatch](https://aws.amazon.com/cloudwatch/).
 
 ### Requerimientos
 
