@@ -38,7 +38,7 @@ Además para agregar el comando `adatrap_miner` a las variables de ambiente se d
 
     pip install -e .
 
-#### Creación de usuario AWS
+### Creación de usuario AWS
 
 El funcionamiento del programa se requieren las credenciales de un usuario AWS con permisos **AmazonEC2FullAccess**,
 **AmazonS3FullAccess**, **AmazonS3FullAccess**, **CloudWatchAgentServerPolicy** y **CloudWatchAgentAdminPolicy**.
@@ -67,12 +67,12 @@ Finalmente se puede ir al siguiente paso **Next: Tags**.
 
 ![aws-paso-3](docs/img/3-add-policy.png)
 
-#### 4) Tags (Opcional)
+##### 4) Tags (Opcional)
 
 Opcionalmente se pueden añadir etiquetas para identificar o almacena datos referente al usuario. Ir al paso siguiente **Next Review**.
 ![aws-paso-4](docs/img/4-add-tags.png)
 
-#### 5) Review
+##### 5) Review
 
 En esta sección se debe revisar que todos los datos estén correctos y avanzar al siguiente
 
@@ -84,38 +84,55 @@ El usuario ha sido creado exitosamente, por lo que es importante guardar sus cre
 . Ambas credenciales **Access key ID** y **Secret access key** serán utilizadas para la configuración del proyecto.
 ![aws-paso-6](docs/img/6-id-secret-key.png)
 
-### .env
+### Archivo de configuración .env
 
 Se debe crear un archivo .env en la raíz del proyecto el cual incluirá las credenciales y otra información en el
 siguiente formato:
 
-    AWS_ACCESS_KEY_ID= Id de acceso creado en el paso anterior.
+    # Id de acceso creado en el paso anterior.
+    AWS_ACCESS_KEY_ID=
+
+    # Clave de acceso creado en el paso anterior
+    AWS_SECRET_ACCESS_KEY=
     
-    AWS_SECRET_ACCESS_KEY= Clave de acceso creado en el paso anterior
+    # Región donde se ubicará la instancia EC2 (Ejemplo: us-east-1)
+    REGION_NAME=
     
-    REGION_NAME= Región donde se ubicará la instancia EC2 (Ejemplo: us-east-2)
+    # Id de la imagen a utilizar en la instancia EC2 (Ejemplo: ami-0b697c4ae566cad55, imagen de Microsoft Windows Server 2019 Base) 
+    AMI_ID=
     
-    AMI_ID= Id de la imagen a utilizar en la instancia EC2
+    # Nombre de la máquina ec2 a utilizar (ej: t2.micro)
+    INSTANCE_TYPE=
     
-    INSTANCE_TYPE= Nombre de la máquina ec2 a utilizar (ej: t2.micro)
+    # Par de claves para acceso ec2 (Si se desea crear una nueva key pair dejar un nombre por defecto.)
+    KEY_PAIR=
     
-    KEY_PAIR= Par de claves para acceso ec2 (Si se desea crear una nueva key pair dejar un nombre por defecto.)
+    # Nombre de log de grupo Cloudwatch
+    LOG_GROUP=
     
-    LOG_GROUP= Nombre de log de grupo Cloudwatch
+    # Id para el log general
+    GENERAL_LOG_STREAM=
     
-    GENERAL_LOG_STREAM= Id para el log general
+    # Bucket donde se encuentra ejecutable ADATRAP
+    EXECUTABLES_BUCKET=
     
-    EXECUTABLES_BUCKET= Bucket donde se encuentra ejecutable ADATRAP
+    # Bucket de gps
+    GPS_BUCKET_NAME=
     
-    GPS_BUCKET_NAME= Bucket de gps
+    # Bucket de po
+    OP_PROGRAM_BUCKET_NAME=
     
-    OP_PROGRAM_BUCKET_NAME= Bucket de po
+    # Bucket de archivo 196
+    FILE_196_BUCKET_NAME=
     
-    FILE_196_BUCKET_NAME= Bucket de archivo 196
+    # Bucket de transacciones
+    TRANSACTION_BUCKET_NAME=
     
-    TRANSACTION_BUCKET_NAME= Bucket de transacciones
+    # Bucket S3 donde se almacenan los resultados de ADATRAP
+    OUTPUT_DATA_BUCKET_NAME=
     
-    DATA_BUCKET_NAME= Bucket S3 donde se almacenan los resultados de ADATRAP
+    # Bucket S3 donde se almacena el archivo de detalle de servicios
+    SERVICE_DETAIL_BUCKET_NAME=
 
 ### Creación de Key Pair
 
@@ -179,7 +196,50 @@ Finalmente también se debe agregar el nombre a la variable *GENERAL_LOG_STREAM*
 
 ## Buckets S3
 
-Para el funcionamiento del programa se requiere que
+Para el funcionamiento del programa se requiere que las fuentes de datos se encuentren almacenada en buckets de S3. Estos datos son los siguientes:
+
+### Diccionario de Servicios
+
+Estos datos se deben encontrar en el formato YYYY-MM-DD.po.zip, donde YYYY-MM-DD representa desde que día es válido el diccionario. Sus archivos internos deben estar en formato gz.
+
+El nombre del bucket asociado a los diccionarios de servicio debe ingresarse como valor en la variable **OP_PROGRAM_BUCKET_NAME** del archivo .env
+
+
+### Datos gps
+Los datos de gps deben estar en formato YYYY-MM-DD.gps.gz donde YYYY-MM-DD representa el día donde el archivo es válido.
+
+Se debe almacenar el nombre del bucket en la variable **GPS_BUCKET_NAME** del archivo .env
+
+### Datos 196
+Estos datos deben tener el formato YYYY-MM-DD.196.gz donde YYYY-MM-DD representa el día donde el archivo es válido.
+
+El nombre de este bucket se debe almacenar en la variable **FILE_196_BUCKET_NAME** del archivo .env
+
+### Datos de transacciones
+Los datos se deben encontrar en formato YYYY-MM-DD.trx.gz donde YYYY-MM-DD representa el día donde el archivo es válido.
+
+El nombre del bucket se debe almacenar en la variable **TRANSACTION_BUCKET_NAME** en el archivo .env
+
+### Datos de detalle de servicio
+Este archivo debe estar en formato Diccionario-DetalleServicioZP_YYYYMMDD_YYYYMMDD.csv.gz donde el primer el par YYYYMMDD representan desde que día hasta que día es válido el archivo.
+
+El nombre de este bucket se debe almacenar en la variable SERVICE_DETAIL_BUCKET_NAME  
+
+### Archivos ejecutables 
+El archivo ejecutable ADATRAP se debe encontrar en un bucket con el formato pvmtsc_vX.exe donde X es la versión del programa.
+
+El archivo de configuración de ADATRAP se debe encontrar en el mismo bucket, con formato pvmtsc_vX.par donde X es la versión del archivo.
+
+Ambas versiones de los archivos deben ser la misma para el correcto funcionamiento.
+
+El nombre del bucket se debe almacenar en la variable **EXECUTABLES_BUCKET** 
+
+## Ejecución de tests
+
+Es recomendable ejecutar los tests del programa para verificar su correcto funcionamiento:
+
+    python -m unittest
+
 
 ## Uso
 
