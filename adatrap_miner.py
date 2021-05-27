@@ -124,6 +124,7 @@ def stop_ec2_instance(context, instance_id) -> None:
         context['session'].stop_ec2_instance(instance_id)
         message = f"Instancia con id {instance_id} finalizada."
         context['logger'].info(message)
+        context['session'].send_log_event(context['general_log_stream'], message)
     except botocore.exceptions.ClientError:
         message = f"No se pudo terminar instancia con id {instance_id}, id inválido."
         context['logger'].info(message)
