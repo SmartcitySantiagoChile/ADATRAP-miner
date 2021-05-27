@@ -247,6 +247,18 @@ Para ejecutar adatrap_miner se deben ejecutar el comando con la fecha en formato
 
     adatrap_miner create-ec2-instance 2021-04-22
 
+Si se crea la instancia correctamente se desplegará un mensaje como el siguiente:
+    
+      adatrap_miner create-ec2-instance 2020-06-28
+    > INFO:adatrap_miner:Creando instancia para el día 2020-06-28...
+    > INFO:adatrap_miner:Instancia creada con id: i-074c9c8020b3e24d0 para el día 2020-06-28
+    > INFO:adatrap_miner:Creando log stream para instancia i-074c9c8020b3e24d0...
+    > INFO:adatrap_miner:Log Stream creado con nombre: i-074c9c8020b3e24d0
+
+Al ejecutarse el comando se creará una instancia EC2 con un id. También se creará un log stream en cloudwatch con nombre del id de la instancia creada.
+
+Este id puede ser utilizado para detener la instancia manualmente u obtener los logs asociado a su funcionamiento.
+
 ## Comandos disponibles
 
 ### Detener instancia EC2
@@ -256,6 +268,13 @@ Para detener una instancia EC2 se debe ejecutar
     adatrap_miner stop-ec2-instance ID
 
 Donde *ID* es el id de la instancia.
+
+Si la instancia existe se desplegará un mensaje como el siguiente:
+    
+    adatrap_miner stop-ec2-instance i-01467ca70263c5b71
+    > INFO:adatrap_miner:Finalizando instancia con id i-01467ca70263c5b71...
+    > INFO:adatrap_miner:Instancia con id i-01467ca70263c5b71 finalizada.
+
 
 ### Obtener logs
 
