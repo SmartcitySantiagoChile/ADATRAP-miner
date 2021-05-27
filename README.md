@@ -6,7 +6,7 @@ Programa que se encarga de descargar y procesar datos de viajes y transacciones 
 
 El proyecto se encuentra desarrollado en Python 3.8 y utiliza los siguientes servicios de Amazon Web Services para su
 funcionamiento:
-[EC2](aws.amazon.com/aws/ec2), [S3](https://aws.amazon.com/es/s3/) y [Cloudwatch](https://aws.amazon.com/es/s3/).
+[EC2](https://aws.amazon.com/ec2/), [S3](https://aws.amazon.com/s3/) y [Cloudwatch](https://aws.amazon.com/cloudwatch/).
 
 ### Requerimientos
 
@@ -48,12 +48,14 @@ Los siguientes pasos detallan como crear un usuario AWS con los permisos necesar
 
 Para crear un usuario nuevo se debe acceder a la plataforma [IAM](https://console.aws.amazon.com/iam/home#/home) de AWS
 en la sección [usuarios](https://console.aws.amazon.com/iam/home#/users) y seleccionar la opción **Add User**:
+
 ![aws-paso-1](docs/img/1-add-user.png)
 
 #### 2) Nombrar usuario
 
 Posteriormente se debe escribir un nombre de usuario en **User name**, marcar la casilla **Programmatic access** y
-avanzar al siguiente paso haciendo click en el botón **Next: permissions**
+avanzar al siguiente paso haciendo click en el botón **Next: permissions**.
+
 ![aws-paso-2](docs/img/2-name-user.png)
 
 #### 3) Permisos de Usuario
@@ -81,16 +83,6 @@ En esta sección se debe revisar que todos los datos estén correctos y avanzar 
 El usuario ha sido creado exitosamente, por lo que es importante guardar sus credenciales en la sección **download.csv**
 . Ambas credenciales **Access key ID** y **Secret access key** serán utilizadas para la configuración del proyecto.
 ![aws-paso-6](docs/img/6-id-secret-key.png)
-
-### Logs
-
-Para guardar registro de los logs se requiere la creación de un Log Group y un Log Stream. Sus nombres serán utilizados
-más adelante para mantener registro de las instancias EC2 a crear y el funcionamiento general del software.
-
-#### Crear Log Group
-
-Se debe acceder a la consola de AWS en la
-aplicación [CloudWatch](https://us-east-2.console.aws.amazon.com/cloudwatch/home)
 
 ### .env
 
@@ -129,7 +121,7 @@ siguiente formato:
 
 Para la creación de instancias EC2 y el manejo de estas se requiere tener una **keypar** para poder acceder a las
 instancias creadas en python. Para esto el programa tiene un comando que permite la creación de un keypar dado los datos
-de usuario en el archivo .env.
+de usuario en el archivo .env (variables **AWS_ACCESS_KEY_ID** y **AWS_SECRET_ACCESS_KEY**).
 
 Este comando crea una keypair con el nombre dado como argumento o **ec2-keypair** por defecto, la cual se registra en
 AWS y se almacena localmente en la raíz del proyecto.
@@ -164,7 +156,7 @@ otra parte utilizará el log stream creado como un log general de eventos asocia
 ### Log Group
 
 Para crear un Log Group se debe acceder a la
-plataforma [Cloudwatch](https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2#logsV2:log-groups) y
+plataforma [Cloudwatch](https://us-east-1.console.aws.amazon.com/cloudwatch/home?region=us-east-1#logsV2:log-groups) y
 seleccionar la opción **Create log group**.
 
 Se debe ingresar un nombre en *Log group name*. En la sección *Retention setting* se debe seleccionar la opción "1 week"
