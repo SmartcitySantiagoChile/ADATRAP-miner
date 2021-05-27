@@ -1,0 +1,173 @@
+Parametros Asignacion Paradero a validacion
+------------------------
+
+ADATRAP/{date}/{date}.subidas										* Subidas por paradero
+ADATRAP/{date}/{date}.servicios									* Datos de cada servicio
+ADATRAP/{date}/{date}.profile										* Perfiles por expedicion (servicio,expedicion,patente,parada,tiempo)
+ADATRAP/{date}/{date}.perfilesag									* Informacion de perfiles agregado por servicio-periodo
+ADATRAP/{date}/{date}.expediciones									* Datos por cada expedicion
+ADATRAP/{date}/{date}.stop										* Datos por cada parada-periodo
+ADATRAP/{date}/{date}.zonas										* Datos por cada zona-periodo
+ADATRAP/{date}/{date}.buses										* Datos por cada bus
+ADATRAP/{date}/{date}.tarjetas										* Datos por cada tarjeta
+ADATRAP/{date}/{date}.headways										* Informacion de headways (no terminado)
+ADATRAP/{date}/{date}.etapas										* Tabla de etapas
+ADATRAP/{date}/{date}.viajes										* Tabla de viajes
+ADATRAP/{date}/{date}.actividades									* Tabla de actividades por tarjeta
+ADATRAP/{date}/{date}.indicadores									* Indicadores sobre los viajes
+ADATRAP/{date}/{date}.general									* Variables globales del procesamiento
+ADATRAP/{date}/{date}.odbyroute									* Variables globales del procesamiento
+ADATRAP/{date}/{date}.stoptime									* Variables globales del procesamiento
+ADATRAP/{date}/{date}.bip									* Variables globales del procesamiento
+ADATRAP/{date}/{date}.podata									* Variables globales del procesamiento
+ADATRAP/{date}/													* Variables globales del procesamiento
+{date}																			* Fecha del dia de procesamiento
+1																					* 0 formato ADATRAP, 1 formato Online
+{date}.gps			* INPUT : archivo con gps
+1	1				* patente
+4	3				* tiempo del GPS {date} ano-mes-dia hora:min:seg (anomesdiahoraminseg)
+2	4				* latitud
+3	5				* longitud
+{date}.196				* Path donde se encuentran los archivos de informe 1.96
+1					* unidad de negocio
+2					* patente
+5					* servicio
+6					* {date} de inicio
+7					* {date} de fin
+12					* velocidad media
+17					* cumplimiento operativo
+{po_path}/Paraderos/ConsolidadoParadas_PO{po_date}.csv								* Archivo con las secuencias de paraderos
+3					* servicio
+4					* sentido
+5					* variante
+7					* codigo de paradero
+8					* codigo de usuario
+9					* comuna del paradero
+13					* x del paradero (UTM)
+14					* y del paradero (UTM)
+15					* nombre del paradero
+100					* Distancia maxima para definir si una validacion esta fuera de ruta
+100					* Distancia umbral de cercania para con el siguiente paradero
+1					* numero de secuencia del paradero en el servicio
+{po_path}/Paraderos/BaseInfra.csv										*  Nombre de archivo con la red de paraderos
+1					* codigo de la parada
+2					* codigo de usuario
+4					* clasificacion de los paraderos (Activo)
+15					* nombre del paradero
+9					* comuna del paradero
+13					* coordenada X
+14					* coordenada Y
+{date}.trx					* Nombre archivo con datos de transacciones
+3	1				* Columna del id
+9	3				* Columna del sitio
+2	2				* Columna de tiempo trxa (ano-mes-dia 00-00-00)
+1	4				* Columna con el codigo numerico del operador
+13	-1				* Columna con el tipo de la transaccion
+10	-1				* Columna con el servicio del sinoptico
+12	-1				* Columna con el sentido del sinoptico
+14	-1				* Columna con el contrato de la tarjeta
+{po_path}/Diccionario/Diccionario-Comunas_PO{po_date}.csv					* Nombre archivo con datos de transacciones
+1					* Columna del id de la comuna
+2					* Columna del nombre de la comuna
+{po_path}/Diccionario/Diccionario-Servicios_PO{po_date}.csv		*Nombre de archivo con el diccionario de codigos servicio-sentido
+12			* Codigo
+9	8		* Codigo secuencias de parada
+2			* Codigo rutas
+14			* Columna tipo de servicio
+13			* Codigo base de servicio
+{po_path}/Rutas/ShapeRutas_PO{po_date}.csv			* Nombre de archivo con la informacion de las rutas
+2			* Columna con el codigo de servicio-sentido-variante
+3			* Columna con coordenada x nodo inicio (UTM)
+4			* Columna con coordenada y nodo inicio (UTM)
+1			* Columna con el correlativo de la secuencia de nodos
+{service_detail_file}		* Nombre archivo con informacion de las zonas pagas
+1			* Numero de columna con el codigo de la zona paga
+2			* Validadores asociados a esa zona paga
+3			* Numero de columna con el codigo de la parada
+4			* Numero de columna con el codigo de la parada 2
+5			* Numero de columna con x
+6			* Numero de columna con y
+7			* Numero de columna con la comuna
+8			* Numero de columna del nombre de la zona paga
+9			* Numero de columna caso mixto
+10			* Numero de columna con listado de unidades de negocio
+11			* Numero de columna con listado de servicios
+30			* Tiempo umbral maximo de espera en zona paga en minutos
+200.0		* Distancia umbral para considerar un nodo de la ruta, fuera de ruta
+{po_path}/Diccionario/Diccionario-EstacionesMetro_PO{po_date}.csv 		* Nombre archivo con informacion de estaciones de metro
+1			* nombre utilizado por las transacciones de la estacion de metro
+6			* estandar del nombre
+3			* Numero de columna con latitud
+4			* Numero de columna con longitud
+5			* Numero de columna con linea
+9			* Numero de columna con codigo
+7			* Numero de columna con tipo
+2			* Numero de columna con comuna
+10			* Numero de columna con color
+8			* estandar estacion unica
+{po_path}/Diccionario/DistanciaGrilla.csv		* Nombre archivo con secuencia de estaciones para cada linea
+{po_path}/Metro/Lineas.txt		* Nombre archivo con secuencia de estaciones para cada linea
+{po_path}/Metro/Horarios.csv		* Nombre archivo con secuencia de estaciones para cada linea
+{po_path}/Metro/Combinacion.csv 		* Nombre archivo con pares de estaciones que combinan
+{po_path}/Metro/Lion.csv 		* Nombre archivo con informacion de estaciones de metro
+1			* linea de metro
+2			* Estacion - codigo
+3			* Via
+4			* Fecha
+5			* Tiempo salida
+6			* Tiempo entrada
+7			* Tren
+8			* Explotacion
+{po_path}/Diccionario/Diccionario-Patentes_PO{po_date}.csv		* Nombre archivo con informacion de capacidades
+3			* patente
+12			* plazas
+13			* tipo vehiculo
+{po_path}/Evasion/EvasionServicioSentidoParadaMH_PO{po_date}.csv 		* Nombre archivo evasion servicio-parada-periodo
+{po_path}/Evasion/Zonas777Fevasion_PO{po_date}.csv 		* Nombre archivo evasion zona
+{po_path}/Diccionario/Diccionario-Zonificaciones_PO{po_date}.csv 		* Nombre archivo con informacion de las zonificaciones
+1			* Numero de columna de id
+2			* Numero de columna x
+3			* Numero de columna y
+4			* Numero de columna nombre
+5			* Numero de columna zonificacion
+{po_path}/Diccionario/Diccionario-PeriodosTS_PO{po_date}.csv 		* Nombre archivo con informacion de las zonificaciones
+1			* id
+2			* Tipo Dia
+3			* Nombre
+4			* tiempo inicial
+5			* Tiempo final
+{po_path}/secuencia_paradas_full.dbg						* Nombre archivo con secuencia full
+1			* codigo de servicio
+2			* dist en ruta
+3			* es o no de la secuencia PO{po_date}
+4			* codigo del paradero
+{po_path}/velocidadesAgosto2019.csv							*
+{po_path}/Diccionario/Diccionario-EstacionesMetroTren_PO{po_date}.csv
+{po_path}/MetroTren/tiemposViajeMetroTren.txt
+{po_path}/osm.csv												* Nombre archivo con el posicionamiento principal
+1			* id
+3			* lat
+2			* lon
+7			* highway
+8			* name
+9			* oneway
+{po_path}/Frecuencias/Frecuencias_PO{po_date}.csv												* Nombre archivo con el posicionamiento principal
+{po_path}/Frecuencias/Capacidades_PO{po_date}.csv												* Nombre archivo con el posicionamiento principal
+{po_path}/Frecuencias/Distancias_PO{po_date}.csv												* Nombre archivo con el posicionamiento principal
+{po_path}/Frecuencias/Velocidades_PO{po_date}.csv												* Nombre archivo con el posicionamiento principal
+{po_path}/Diccionario/Diccionario-AsignacionZP2.csv												* Nombre archivo con el posicionamiento principal
+ADATRAP/{date}/kmls/
+ADATRAP/{date}/reportes/
+ADATRAP/{date}/debug/
+{po_path}/Indicadores/
+{po_path}/Diccionario/Diccionario_Tipo_dia.csv						* Nombre archivo de calendario
+1			* 1 si se quiere usar la semilla de la siguiente linea, 0 sino
+1350406895
+0			* 1 el programa no ejecuta si no encuentra algun servicio del reporte 2.2 en el diccionario
+0			* 1 el programa no ejecuta si no encuentra alguna ruta, 0 solo aparecen advertencias
+0			* 1 el programa no ejecuta si no encuentra alguna secuencia de parada, 0 solo aparecen advertencias
+1			* 1 si el programa calcula la estimacion de subidas a buses en zonas pagas
+0			* 1 debug, imprime archivos para haceer debug
+40			* Minutos maximos que se consideran para cortar un viaje (valor usual 40)
+1			* -1 se dibujan todos los servicios, 0 ninguno, [1,n] el programa dibuja una lista de servicios, escrita a continuacion (usar codigo reporte 2.2)
+T201 00I

@@ -226,11 +226,15 @@ Este archivo debe estar en formato Diccionario-DetalleServicioZP_YYYYMMDD_YYYYMM
 El nombre de este bucket se debe almacenar en la variable SERVICE_DETAIL_BUCKET_NAME  
 
 ### Archivos ejecutables 
+#### ADATRAP
 El archivo ejecutable ADATRAP se debe encontrar en un bucket con el formato pvmtsc_vX.exe donde X es la versión del programa.
 
+#### Archivo de configuración de ADATRAP
 El archivo de configuración de ADATRAP se debe encontrar en el mismo bucket, con formato pvmtsc_vX.par donde X es la versión del archivo.
 
 Ambas versiones de los archivos deben ser la misma para el correcto funcionamiento.
+
+Un ejemplo de un archivo configurable de configuración compatible con la versión 0.2 se encuentra [aquí](docs/pvmtsc_v0.2.par)
 
 El nombre del bucket se debe almacenar en la variable **EXECUTABLES_BUCKET** 
 
