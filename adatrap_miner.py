@@ -62,10 +62,8 @@ def create_key_pair(context, name) -> None:
         context['session'].create_key_pair(name)
         message = f"¡Keypair creado exitosamente! El archivo '{name}.pem' se encuentra en la raíz del proyecto."
         context['logger'].info(message)
-        context['session'].send_log_event(context['general_log_stream'], message)
     except botocore.exceptions.ClientError:
         message = f"El keypair '{name}' ya existe."
-        context['logger'].error(message)
         context['session'].send_log_event(context['general_log_stream'], message)
 
 
