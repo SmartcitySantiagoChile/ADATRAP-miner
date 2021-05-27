@@ -31,6 +31,8 @@ def check_env_variables():
     for key, answer in env_dict.items():
         try:
             name = config(key)
+            if not name:
+                raise UndefinedValueError
         except UndefinedValueError:
             logging.getLogger(__name__).error(f"Variable {key} ({answer}) no definida en .env")
             exit(1)
