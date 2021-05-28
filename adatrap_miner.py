@@ -253,6 +253,6 @@ def execute_adatrap(context, date, debug):
     if stderr:
         command_manager.send_log_message(stderr, general=True)
         command_manager.send_log_message(f"Proceso ADATRAP para la instancia {command_manager.instance_id} finalizado con errores.",
-                                         general=True)
+                                         general=True, error=True)
     command_manager.send_log_message("Finalizando instancia...")
     stop_ec2_instance(context, command_manager.instance_id)
