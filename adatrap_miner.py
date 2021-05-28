@@ -26,7 +26,8 @@ def check_env_variables():
         "FILE_196_BUCKET_NAME": "Bucket S3 que contiene datos 196",
         "TRANSACTION_BUCKET_NAME": "Bucket S3 que contiene datos de transacciones",
         "OUTPUT_DATA_BUCKET_NAME": "Bucket S3 donde se almacenan los resultados de ADATRAP",
-        "SERVICE_DETAIL_BUCKET_NAME": "Bucket S3 donde se almacenan los archivos de detalle de servicio"
+        "SERVICE_DETAIL_BUCKET_NAME": "Bucket S3 donde se almacenan los archivos de detalle de servicio",
+        "EXECUTABLE_VERSION": "Versión de ejecutable ADATRAP"
     }
     for key, answer in env_dict.items():
         try:
@@ -66,7 +67,7 @@ def create_key_pair(context, name) -> None:
         context['logger'].info(message)
     except botocore.exceptions.ClientError:
         message = f"El keypair '{name}' ya existe."
-        context['session'].send_log_event(context['general_log_stream'], message)
+        context['logger'].info(message)
 
 
 @cli.command()
@@ -101,7 +102,9 @@ def create_ec2_instance(context, date) -> None:
         # Send initial message to EC2 Log Stream
         message = "Instancia creada correctamente."
         context['session'].send_log_event(instance_id, message)
-    except botocore.exceptions.ClientError:
+    except botocore.exceptions.ClientError as e:
+        context['logger'].info(e)
+        context['session'].send_log_event(context['general_log_stream'], e)
         message = f"No se pudo crear instancia con fecha {date}."
         context['logger'].info(message)
         context['session'].send_log_event(context['general_log_stream'], message)
@@ -185,8 +188,8 @@ def execute_adatrap(context, date, debug):
     context = context.obj
     data_path: str = "ADATRAP"
     general_log_stream: str = context["general_log_stream"]
-    executable_adatrap: str = 'pvmtsc_v0.2.exe'
-    config_file_adatrap: str = 'pvmtsc_v0.2.par'
+    executable_adatrap: str = f"pvmtsc_v{config('EXECUTABLE_VERSION')}.exe"
+    config_file_adatrap: str = f"pvmtsc_v{config('EXECUTABLE_VERSION')}.par"
     config_file_replacements: dict = {
         '{po_path}': 'op_path_replacement',
         '{service_detail_file}': 'service_detail',

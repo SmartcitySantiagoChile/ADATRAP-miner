@@ -134,6 +134,9 @@ siguiente formato:
     # Bucket S3 donde se almacena el archivo de detalle de servicios
     SERVICE_DETAIL_BUCKET_NAME=
 
+    # Version de ejecutable ADATRAP
+    EXECUTABLE_VERSION=
+
 ### Creación de Key Pair
 
 Para la creación de instancias EC2 y el manejo de estas se requiere tener una **keypar** para poder acceder a las
@@ -237,7 +240,7 @@ Ambas versiones de los archivos deben ser la misma para el correcto funcionamien
 Un ejemplo de un archivo configurable de configuración compatible con la versión 0.2 se encuentra [aquí](docs/pvmtsc_v0.2.par)
 
 El nombre del bucket se debe almacenar en la variable **EXECUTABLES_BUCKET** 
-
+y la versión del ejecutable en la variable **EXECUTABLE_VERSION** del archivo .env
 ## Ejecución de tests
 
 Es recomendable ejecutar los tests del programa para verificar su correcto funcionamiento:
