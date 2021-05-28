@@ -37,17 +37,21 @@ class WindowsManager:
         :param general: send the message to general log
         """
         if not error:
+            status = "INFO: "
             self.logger.info(message)
             if not self.debug_state:
-                self.aws_session.send_log_event(self.instance_id, message)
+                self.aws_session.send_log_event(self.instance_id, message, status)
                 if general:
-                    self.aws_session.send_log_event(self.general_log_stream, message)
+                    self.aws_session.send_log_event(self.general_log_stream, message, status)
         else:
+            status = "ERROR: "
             self.logger.error(message)
             if not self.debug_state:
-                self.aws_session.send_log_event(self.instance_id, message)
+                self.aws_session.send_log_event(self.instance_id, message, status)
+                self.aws_session.send_log_event(self.general_log_stream, message, status)
                 message = f"Error en la instancia {self.instance_id}, proceso abortado."
-                self.aws_session.send_log_event(self.general_log_stream, message)
+                self.aws_session.send_log_event(self.instance_id, message, status)
+                self.aws_session.send_log_event(self.general_log_stream, message, status)
                 self.stop_instance()
 
     def download_file_from_bucket(self, bucket_file, bucket_name):
@@ -120,13 +124,14 @@ class WindowsManager:
         """
         Finish the instance and the program
         """
+        status = "INFO: "
         message = f"Finalizando instancia {self.instance_id} ..."
-        self.aws_session.send_log_event(self.general_log_stream, message)
-        self.aws_session.send_log_event(self.instance_id, message)
+        self.aws_session.send_log_event(self.general_log_stream, message, status)
+        self.aws_session.send_log_event(self.instance_id, message, status)
         self.aws_session.stop_ec2_instance(self.instance_id)
         message = f"Instancia {self.instance_id} finalizada."
-        self.aws_session.send_log_event(self.instance_id, message)
-        self.aws_session.send_log_event(self.general_log_stream, message)
+        self.aws_session.send_log_event(self.instance_id, message, status)
+        self.aws_session.send_log_event(self.general_log_stream, message, status)
         exit(1)
 
     def parse_config_file(self, date):

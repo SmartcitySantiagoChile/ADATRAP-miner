@@ -102,7 +102,7 @@ class AWSSession:
         logs = self.session.client("logs")
         logs.create_log_stream(logGroupName=self.log_group, logStreamName=name)
 
-    def send_log_event(self, log_stream_name: str, message: str) -> dict:
+    def send_log_event(self, log_stream_name: str, message: str, status: str) -> dict:
         """
         Send a Log Event to a Log Stream
         :param log_stream_name: name of the Log Stream
@@ -119,7 +119,7 @@ class AWSSession:
             "logEvents": [
                 {
                     "timestamp": timestamp,
-                    "message": f"{time.strftime('%Y-%m-%d %H:%M:%S')}\t{message}",
+                    "message": f"{time.strftime('%Y-%m-%d %H:%M:%S')}\t{status}{message}",
                 }
             ],
         }
