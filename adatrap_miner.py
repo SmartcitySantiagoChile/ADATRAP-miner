@@ -132,6 +132,9 @@ def stop_ec2_instance(context, instance_id) -> None:
         message = f"No se pudo terminar instancia con id {instance_id}, id inválido."
         context['logger'].info(message)
         context['session'].send_log_event(context['general_log_stream'], message)
+    except Exception as e:
+        context['logger'].info(e)
+        context['session'].send_log_event(context['general_log_stream'], e)
 
 
 @cli.command()
