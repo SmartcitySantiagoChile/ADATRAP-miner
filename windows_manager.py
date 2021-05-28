@@ -180,7 +180,7 @@ class WindowsManager:
         """
         folder_path = os.path.join(self.data_path, date)
         self.send_log_message("Comprimiendo datos...")
-        zip_filename = os.path.join(self.tmp_files_path, f"{date}.zip")
+        zip_filename = f"{date}.zip"
         with ZipFile(zip_filename, 'w') as zipObj:
             # Iterate over all the files in directory
             for folder_name, subfolders, filenames in os.walk(folder_path):
@@ -200,12 +200,11 @@ class WindowsManager:
         :param output_file_name: filename to upload
         """
         output_data_bucket = config('OUTPUT_DATA_BUCKET_NAME')
-        output_path = os.path.join(self.tmp_files_path, output_file_name)
         self.send_log_message(f"Subiendo datos {output_file_name} ...")
         if not self.aws_session.check_bucket_exists(output_data_bucket):
             self.send_log_message(f"El bucket \'{output_data_bucket}\' no existe", error=True)
         try:
-            self.aws_session.send_file_to_bucket(output_path, output_file_name, output_data_bucket)
+            self.aws_session.send_file_to_bucket(output_file_name, output_file_name, output_data_bucket)
             self.send_log_message("Datos subidos exitosamente.")
         except ClientError as e:
             self.send_log_message(e)
