@@ -102,7 +102,7 @@ def create_ec2_instance(context, date) -> None:
 
         # Send initial message to EC2 Log Stream
         message = "Instancia creada correctamente."
-        context['session'].send_log_event(instance_id, message, status)
+        context['session'].send_log_event(instance_id, message, message_status)
 
     except botocore.exceptions.ClientError as e:
         message_status = "ERROR: "
