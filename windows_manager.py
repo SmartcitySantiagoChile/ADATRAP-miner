@@ -122,8 +122,10 @@ class WindowsManager:
         """
         message = f"Finalizando instancia {self.instance_id} ..."
         self.aws_session.send_log_event(self.general_log_stream, message)
+        self.aws_session.send_log_event(self.instance_id, message)
         self.aws_session.stop_ec2_instance(self.instance_id)
         message = f"Instancia {self.instance_id} finalizada."
+        self.aws_session.send_log_event(self.instance_id, message)
         self.aws_session.send_log_event(self.general_log_stream, message)
         exit(1)
 
