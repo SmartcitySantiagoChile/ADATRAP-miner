@@ -120,7 +120,7 @@ class WindowsManager:
         """
         Finish the instance and the program
         """
-        self.stop_fun(self.context, self.instance_id)
+        self.aws_session.stop_ec2_instance(self.instance_id)
 
     def parse_config_file(self, date):
         """
