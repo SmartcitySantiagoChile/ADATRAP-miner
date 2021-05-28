@@ -48,7 +48,7 @@ class WindowsManager:
                 self.aws_session.send_log_event(self.instance_id, message)
                 message = f"Error en la instancia {self.instance_id}, proceso abortado."
                 self.aws_session.send_log_event(self.general_log_stream, message)
-            self.stop_instance()
+                self.stop_instance(self.instance_id)
 
     def download_file_from_bucket(self, bucket_file, bucket_name):
         """
@@ -120,7 +120,11 @@ class WindowsManager:
         """
         Finish the instance and the program
         """
+        message = f"Finalizando instancia {self.instance_id} ..."
+        self.aws_session.send_log_event(self.general_log_stream, message)
         self.aws_session.stop_ec2_instance(self.instance_id)
+        message = f"Instancia {self.instance_id} finalizada."
+        self.aws_session.send_log_event(self.general_log_stream, message)
 
     def parse_config_file(self, date):
         """
