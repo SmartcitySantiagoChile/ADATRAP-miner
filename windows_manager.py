@@ -14,7 +14,7 @@ from ec2_metadata import ec2_metadata
 class WindowsManager:
 
     def __init__(self, log, aws_session, general_log_stream, config_file_replacements, config_file_adatrap, data_path
-                 , data_buckets, bucket_names, executable_adatrap, stop_fun, context, debug_state=False):
+                 , data_buckets, bucket_names, executable_adatrap, debug_state=False):
         self.debug_state = debug_state
         self.logger = log
         self.general_log_stream = general_log_stream
@@ -26,8 +26,7 @@ class WindowsManager:
         self.data_buckets = data_buckets
         self.buckets_name = bucket_names
         self.executable_adatrap = executable_adatrap
-        self.stop_fun = stop_fun
-        self.context = context
+        self.tmp_files_path = "tmp"
 
     def send_log_message(self, message, error=False, general=False):
         """
@@ -63,7 +62,8 @@ class WindowsManager:
         self.send_log_message(f"Bucket encontrado con nombre {bucket_file}")
         self.send_log_message(f"Descargando {bucket_file}...")
         try:
-            self.aws_session.download_object_from_bucket(bucket_file, bucket_name, bucket_file)
+            self.aws_session.download_object_from_bucket(bucket_file, bucket_name,
+                                                         os.path.join(self.tmp_files_path, bucket_file))
             self.send_log_message(f"{bucket_file} descargado")
         except ClientError as e:
             self.send_log_message(e, error=True)
@@ -79,7 +79,7 @@ class WindowsManager:
             self.config_file_replacements['{po_date}'] = ''.join(self.config_file_replacements['{po_path}'].split('-'))
             with zipfile.ZipFile(bucket_file, 'r') as zip_ref:
                 self.send_log_message(f"Descomprimiendo archivo {bucket_file}...")
-                zip_ref.extractall()
+                zip_ref.extractall(self.tmp_files_path)
 
                 folder = self.config_file_replacements['{po_path}']
                 sub_folders = [f.path for f in os.scandir(folder) if f.is_dir()]
@@ -114,7 +114,7 @@ class WindowsManager:
             bucket_file = self.aws_session.get_available_day_for_bucket(date, bucket, bucket_name)
             if bucket_file:
                 self.download_file_from_bucket(bucket_file, bucket)
-                self.decompress_file_from_bucket(bucket_name, bucket_file)
+                self.decompress_file_from_bucket(bucket_name, os.path.join(self.tmp_files_path, bucket_file))
             else:
                 self.send_log_message(
                     f"No se ha encontrado un archivo para la fecha {date} en el bucket asociado a {bucket_name}.",
