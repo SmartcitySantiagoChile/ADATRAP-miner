@@ -62,8 +62,11 @@ class WindowsManager:
         self.send_log_message(f"Bucket encontrado con nombre {bucket_file}")
         self.send_log_message(f"Descargando {bucket_file}...")
         try:
-            self.aws_session.download_object_from_bucket(bucket_file, bucket_name,
-                                                         os.path.join(self.tmp_files_path, bucket_file))
+            if bucket_file in [config("EXECUTABLES_BUCKET")]:
+                self.aws_session.download_object_from_bucket(bucket_file, bucket_name, bucket_file)
+            else:
+                self.aws_session.download_object_from_bucket(bucket_file, bucket_name,
+                                                             os.path.join(self.tmp_files_path, bucket_file))
             self.send_log_message(f"{bucket_file} descargado")
         except ClientError as e:
             self.send_log_message(e, error=True)
@@ -177,7 +180,7 @@ class WindowsManager:
         """
         folder_path = os.path.join(self.data_path, date)
         self.send_log_message("Comprimiendo datos...")
-        zip_filename = f"{date}.zip"
+        zip_filename = os.path.join(self.tmp_files_path, f"{date}.zip")
         with ZipFile(zip_filename, 'w') as zipObj:
             # Iterate over all the files in directory
             for folder_name, subfolders, filenames in os.walk(folder_path):
