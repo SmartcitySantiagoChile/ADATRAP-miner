@@ -168,6 +168,7 @@ class AWSSession:
         obj_list = []
         for obj in bucket.objects.all():
             size_in_mb = float(obj.size) / (1024 ** 2)
+            size_in_mb = float(obj.size) / (1024 ** 2)
             url = self._build_url(obj.key, bucket_name)
             obj_list.append(dict(name=obj.key, size=size_in_mb, last_modified=obj.last_modified, url=url))
 

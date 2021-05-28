@@ -287,11 +287,13 @@ Si la instancia existe se desplegará un mensaje como el siguiente:
 
 Para obtener los logs asociados a un log stream se debe ejecutar
 
-    adatrap_miner get-log-stream LOGNAME DATE
+    adatrap_miner get-log-stream LOGNAME
 
-Donde *LOGNAME* es el nombre del log stream y *DATE* es desde que fecha. Si se quiere almacenar en un archivo se debe
+Donde *LOGNAME* es el nombre del log stream.
+
+Si se quiere almacenar en un archivo se debe
 utilizar la variable -o
 
-    adatrap_miner get-log-stream LOGNAME DATE -o OUTPUTNAME
+    adatrap_miner get-log-stream LOGNAME LOGDATE -o OUTPUTNAME
 
 
