@@ -81,35 +81,36 @@ def create_ec2_instance(context, date) -> None:
     """
     context = context.obj
     try:
-        status = "INFO: "
+        message_status = "INFO: "
         message = f"Creando instancia para el día {date}..."
         context['logger'].info(message)
-        context['session'].send_log_event(context['general_log_stream'], message, status)
-        context['session'].run_ec2_instance(date)
+        context['session'].send_log_event(context['general_log_stream'], message, message_status)
+        status = context['session'].run_ec2_instance(date)
         instance_id = status["Instances"][0]["InstanceId"]
         message = f"Instancia creada con id: {instance_id} para el día {date}"
         context['logger'].info(message)
-        context['session'].send_log_event(context['general_log_stream'], message, status)
+        context['session'].send_log_event(context['general_log_stream'], message, message_status)
 
         # Create EC2 Log Stream
         message = f"Creando log stream para instancia {instance_id}..."
         context['logger'].info(message)
-        context['session'].send_log_event(context['general_log_stream'], message, status)
+        context['session'].send_log_event(context['general_log_stream'], message, message_status)
         context['session'].create_log_stream(instance_id)
         message = f"Log Stream creado con nombre: {instance_id}"
         context['logger'].info(message)
-        context['session'].send_log_event(context['general_log_stream'], message, status)
+        context['session'].send_log_event(context['general_log_stream'], message, message_status)
 
         # Send initial message to EC2 Log Stream
         message = "Instancia creada correctamente."
         context['session'].send_log_event(instance_id, message, status)
+
     except botocore.exceptions.ClientError as e:
-        status = "ERROR: "
+        message_status = "ERROR: "
         context['logger'].info(e)
-        context['session'].send_log_event(context['general_log_stream'], e, status)
+        context['session'].send_log_event(context['general_log_stream'], e, message_status)
         message = f"No se pudo crear instancia con fecha {date}."
         context['logger'].info(message)
-        context['session'].send_log_event(context['general_log_stream'], message, status)
+        context['session'].send_log_event(context['general_log_stream'], message, message_status)
 
 
 @cli.command()
