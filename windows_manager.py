@@ -79,18 +79,16 @@ class WindowsManager:
         """
         if bucket_type == "op":
             self.config_file_replacements['{po_path}'] = bucket_file.split('.')[0]
-            self.config_file_replacements['{po_date}'] = ''.join(self.config_file_replacements['{po_path}'].split('-'))
+            self.config_file_replacements['{po_date}'] = ''.join(os.path.basename(self.config_file_replacements['{po_path}']).split('-'))
             with zipfile.ZipFile(bucket_file, 'r') as zip_ref:
                 self.send_log_message(f"Descomprimiendo archivo {bucket_file}...")
                 zip_ref.extractall(self.tmp_files_path)
-
                 folder = self.config_file_replacements['{po_path}']
                 sub_folders = [f.path for f in os.scandir(folder) if f.is_dir()]
                 files = [f.path for f in os.scandir(folder) if not f.is_dir()]
                 for f in files:
                     with gzip.open(f, 'r') as f_in, open('.'.join(f.split('.')[:2]), 'wb') as f_out:
                         shutil.copyfileobj(f_in, f_out)
-
                 for sub in sub_folders:
                     for f in os.listdir(sub):
                         src = os.path.join(sub, f)
