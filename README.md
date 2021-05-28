@@ -137,6 +137,9 @@ siguiente formato:
     # Version de ejecutable ADATRAP
     EXECUTABLE_VERSION=
 
+### Imagen de Instancia 
+Para obtener el ID (AMI_ID) de la imagen a utilizar se debe buscar dentro de las disponibles para el usuario AWS. Por ejemplo, en este [link](https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#LaunchInstanceWizard:) se encuentra un listado de imagenes disponibles.
+
 ### Creación de Key Pair
 
 Para la creación de instancias EC2 y el manejo de estas se requiere tener una **keypar** para poder acceder a las
@@ -294,6 +297,6 @@ Donde *LOGNAME* es el nombre del log stream.
 Si se quiere almacenar en un archivo se debe
 utilizar la variable -o
 
-    adatrap_miner get-log-stream LOGNAME LOGDATE -o OUTPUTNAME
+    adatrap_miner get-log-stream LOGNAME -o OUTPUTNAME
 
 
