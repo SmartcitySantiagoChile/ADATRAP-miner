@@ -62,7 +62,7 @@ class WindowsManager:
         self.send_log_message(f"Bucket encontrado con nombre {bucket_file}")
         self.send_log_message(f"Descargando {bucket_file}...")
         try:
-            if bucket_file in [config("EXECUTABLES_BUCKET")]:
+            if bucket_name in [config("EXECUTABLES_BUCKET")]:
                 self.aws_session.download_object_from_bucket(bucket_file, bucket_name, bucket_file)
             else:
                 self.aws_session.download_object_from_bucket(bucket_file, bucket_name,
@@ -200,11 +200,12 @@ class WindowsManager:
         :param output_file_name: filename to upload
         """
         output_data_bucket = config('OUTPUT_DATA_BUCKET_NAME')
+        output_path = os.path.join(self.tmp_files_path, output_file_name)
         self.send_log_message(f"Subiendo datos {output_file_name} ...")
         if not self.aws_session.check_bucket_exists(output_data_bucket):
             self.send_log_message(f"El bucket \'{output_data_bucket}\' no existe", error=True)
         try:
-            self.aws_session.send_file_to_bucket(output_file_name, output_file_name, output_data_bucket)
+            self.aws_session.send_file_to_bucket(output_path, output_file_name, output_data_bucket)
             self.send_log_message("Datos subidos exitosamente.")
         except ClientError as e:
             self.send_log_message(e)
