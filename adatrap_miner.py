@@ -85,7 +85,7 @@ def create_ec2_instance(context, date) -> None:
         message = f"Creando instancia para el día {date}..."
         context['logger'].info(message)
         context['session'].send_log_event(context['general_log_stream'], message, status)
-        status = context['session'].run_ec2_instance(date)
+        context['session'].run_ec2_instance(date)
         instance_id = status["Instances"][0]["InstanceId"]
         message = f"Instancia creada con id: {instance_id} para el día {date}"
         context['logger'].info(message)
@@ -176,9 +176,10 @@ def get_log_stream(context, output, start_date, end_date, log_name) -> None:
         context['logger'].info(message)
     else:
         for event in log_events:
-            context['logger'].info(event['message'])
-        message = f"Logs desplegados exitosamente."
-        context['logger'].info(message)
+            if "INFO" in event['message']:
+                context['logger'].info(event['message'])
+            else:
+                context['logger'].error(event['message'])
 
 
 @cli.command()
