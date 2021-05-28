@@ -170,6 +170,8 @@ class WindowsManager:
                 return std_out, std_error
             except subprocess.TimeoutExpired:
                 self.send_log_message("Proceso ADATRAP no terminó su ejecución luego de 1:15.", error=True)
+            except Exception as e:
+                self.send_log_message(e, error=True)
         else:
             return "debug", "debug"
 
