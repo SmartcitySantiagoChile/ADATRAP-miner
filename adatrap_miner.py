@@ -242,8 +242,7 @@ def execute_adatrap(context, date, debug):
     # Run ADATRAP
     stdout, stderr = command_manager.run_adatrap(date)
     if stdout:
-        for message in stdout:
-            command_manager.send_log_message(message)
+        command_manager.send_log_message(stdout)
 
         # Compress output data
         command_manager.compress_adatrap_data(date)
