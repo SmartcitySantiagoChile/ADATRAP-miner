@@ -23,12 +23,12 @@ ADATRAP/{date}/{date}.podata									* Variables globales del procesamiento
 ADATRAP/{date}/													* Variables globales del procesamiento
 {date}																			* Fecha del dia de procesamiento
 1																					* 0 formato ADATRAP, 1 formato Online
-{date}.gps			* INPUT : archivo con gps
+tmp/{date}.gps			* INPUT : archivo con gps
 1	1				* patente
 4	3				* tiempo del GPS {date} ano-mes-dia hora:min:seg (anomesdiahoraminseg)
 2	4				* latitud
 3	5				* longitud
-{date}.196				* Path donde se encuentran los archivos de informe 1.96
+tmp/{date}.196				* Path donde se encuentran los archivos de informe 1.96
 1					* unidad de negocio
 2					* patente
 5					* servicio
@@ -49,7 +49,7 @@ ADATRAP/{date}/													* Variables globales del procesamiento
 100					* Distancia maxima para definir si una validacion esta fuera de ruta
 100					* Distancia umbral de cercania para con el siguiente paradero
 1					* numero de secuencia del paradero en el servicio
-{po_path}/Paraderos/BaseInfra.csv										*  Nombre de archivo con la red de paraderos
+{po_path}/Paraderos/BaseInfra_PO{po_date}.csv										*  Nombre de archivo con la red de paraderos
 1					* codigo de la parada
 2					* codigo de usuario
 4					* clasificacion de los paraderos (Activo)
@@ -57,7 +57,7 @@ ADATRAP/{date}/													* Variables globales del procesamiento
 9					* comuna del paradero
 13					* coordenada X
 14					* coordenada Y
-{date}.trx					* Nombre archivo con datos de transacciones
+tmp/{date}.trx					* Nombre archivo con datos de transacciones
 3	1				* Columna del id
 9	3				* Columna del sitio
 2	2				* Columna de tiempo trxa (ano-mes-dia 00-00-00)
@@ -105,11 +105,11 @@ ADATRAP/{date}/													* Variables globales del procesamiento
 2			* Numero de columna con comuna
 10			* Numero de columna con color
 8			* estandar estacion unica
-{po_path}/Diccionario/DistanciaGrilla.csv		* Nombre archivo con secuencia de estaciones para cada linea
-{po_path}/Metro/Lineas.txt		* Nombre archivo con secuencia de estaciones para cada linea
-{po_path}/Metro/Horarios.csv		* Nombre archivo con secuencia de estaciones para cada linea
-{po_path}/Metro/Combinacion.csv 		* Nombre archivo con pares de estaciones que combinan
-{po_path}/Metro/Lion.csv 		* Nombre archivo con informacion de estaciones de metro
+{po_path}/Diccionario/DistanciaGrilla_PO{po_date}.csv		* Nombre archivo con secuencia de estaciones para cada linea
+{po_path}/Metro/Lineas_PO{po_date}.txt		* Nombre archivo con secuencia de estaciones para cada linea
+{po_path}/Metro/Horarios_PO{po_date}.csv		* Nombre archivo con secuencia de estaciones para cada linea
+{po_path}/Metro/Combinacion_PO{po_date}.csv 		* Nombre archivo con pares de estaciones que combinan
+{po_path}/Metro/Lion_PO{po_date}.csv 		* Nombre archivo con informacion de estaciones de metro
 1			* linea de metro
 2			* Estacion - codigo
 3			* Via
@@ -136,15 +136,15 @@ ADATRAP/{date}/													* Variables globales del procesamiento
 3			* Nombre
 4			* tiempo inicial
 5			* Tiempo final
-{po_path}/secuencia_paradas_full.dbg						* Nombre archivo con secuencia full
+{po_path}/secuencia_paradas_full_PO{po_date}.dbg						* Nombre archivo con secuencia full
 1			* codigo de servicio
 2			* dist en ruta
 3			* es o no de la secuencia PO{po_date}
 4			* codigo del paradero
-{po_path}/velocidadesAgosto2019.csv							*
+{po_path}/velocidadesAgosto2019_PO{po_date}.csv							*
 {po_path}/Diccionario/Diccionario-EstacionesMetroTren_PO{po_date}.csv
-{po_path}/MetroTren/tiemposViajeMetroTren.txt
-{po_path}/osm.csv												* Nombre archivo con el posicionamiento principal
+{po_path}/MetroTren/tiemposViajeMetroTren_PO{po_date}.txt
+{po_path}/osm_PO{po_date}.csv												* Nombre archivo con el posicionamiento principal
 1			* id
 3			* lat
 2			* lon
@@ -155,12 +155,12 @@ ADATRAP/{date}/													* Variables globales del procesamiento
 {po_path}/Frecuencias/Capacidades_PO{po_date}.csv												* Nombre archivo con el posicionamiento principal
 {po_path}/Frecuencias/Distancias_PO{po_date}.csv												* Nombre archivo con el posicionamiento principal
 {po_path}/Frecuencias/Velocidades_PO{po_date}.csv												* Nombre archivo con el posicionamiento principal
-{po_path}/Diccionario/Diccionario-AsignacionZP2.csv												* Nombre archivo con el posicionamiento principal
+{po_path}/Diccionario/Diccionario-AsignacionZP2_PO{po_date}.csv												* Nombre archivo con el posicionamiento principal
 ADATRAP/{date}/kmls/
 ADATRAP/{date}/reportes/
 ADATRAP/{date}/debug/
 {po_path}/Indicadores/
-{po_path}/Diccionario/Diccionario_Tipo_dia.csv						* Nombre archivo de calendario
+{po_path}/Diccionario/Diccionario_Tipo_dia_PO{po_date}.csv						* Nombre archivo de calendario
 1			* 1 si se quiere usar la semilla de la siguiente linea, 0 sino
 1350406895
 0			* 1 el programa no ejecuta si no encuentra algun servicio del reporte 2.2 en el diccionario
