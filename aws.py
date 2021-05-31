@@ -53,7 +53,7 @@ class AWSSession:
                 MinCount=1,
                 MaxCount=1,
                 InstanceType=config("INSTANCE_TYPE"),
-                KeyName=os.path.join('tmp', config("KEY_PAIR")),
+                KeyName=config('KEY_PAIR'),
                 UserData=script,
                 Monitoring={"Enabled": True},
             )
