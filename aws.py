@@ -47,7 +47,6 @@ class AWSSession:
                                                               env_file).replace("{GROUP_NAME}",
                                                                                 config('LOG_GROUP'))
             script = lines
-            # TODO: make this configurable
             instances = ec2.run_instances(
                 ImageId=config("AMI_ID"),
                 MinCount=1,

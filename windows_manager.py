@@ -63,12 +63,9 @@ class WindowsManager:
         self.send_log_message(f"Archivo encontrado con nombre {bucket_file}")
         self.send_log_message(f"Descargando {bucket_file}...")
         try:
-            if bucket_name in [config("EXECUTABLES_BUCKET")]:
-                self.aws_session.download_object_from_bucket(bucket_file, bucket_name, bucket_file)
-            else:
-                self.aws_session.download_object_from_bucket(bucket_file, bucket_name,
-                                                             os.path.join(self.tmp_files_path, bucket_file))
-            self.send_log_message(f"{bucket_file} descargado")
+            self.aws_session.download_object_from_bucket(bucket_file, bucket_name,
+                                                         os.path.join(self.tmp_files_path, bucket_file))
+            self.send_log_message(f"{bucket_file} descargado.")
         except ClientError as e:
             self.send_log_message(e, error=True)
         except Exception as e:
@@ -177,7 +174,7 @@ class WindowsManager:
                 std_error = res.stderr.decode("utf-8")
                 return std_out, std_error
             except subprocess.TimeoutExpired:
-                self.send_log_message("Proceso ADATRAP no terminó su ejecución luego de 1:15.", error=True)
+                self.send_log_message("Proceso ADATRAP no terminó su ejecución luego de 1:15h.", error=True)
             except Exception as e:
                 self.send_log_message(e, error=True)
         else:
