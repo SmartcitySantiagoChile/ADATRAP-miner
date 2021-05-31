@@ -1,4 +1,5 @@
 import logging
+import os
 from datetime import datetime
 
 import botocore
@@ -198,8 +199,8 @@ def execute_adatrap(context, date, debug):
     context = context.obj
     data_path: str = "ADATRAP"
     general_log_stream: str = context["general_log_stream"]
-    executable_adatrap: str = f"pvmtsc_v{config('EXECUTABLE_VERSION')}.exe"
-    config_file_adatrap: str = f"pvmtsc_v{config('EXECUTABLE_VERSION')}.par"
+    executable_adatrap: str = os.path.join("tmp", f"pvmtsc_v{config('EXECUTABLE_VERSION')}.exe")
+    config_file_adatrap: str = os.path.join("tmp", f"pvmtsc_v{config('EXECUTABLE_VERSION')}.par")
     config_file_replacements: dict = {
         '{po_path}': 'op_path_replacement',
         '{service_detail_file}': 'service_detail',
