@@ -256,4 +256,4 @@ def execute_adatrap(context, date, debug):
                                          general=True, error=True)
         command_manager.send_log_message(stderr, general=True, error=True)
 
-command_manager.stop_instance()
+    command_manager.stop_instance()
