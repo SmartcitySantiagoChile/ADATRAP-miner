@@ -3,7 +3,7 @@ from unittest import TestCase, mock
 
 from botocore.exceptions import ClientError
 
-import aws
+from adatrap_miner import aws
 
 
 class AwsTest(TestCase):

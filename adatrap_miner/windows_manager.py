@@ -26,7 +26,7 @@ class WindowsManager:
         self.data_buckets = data_buckets
         self.buckets_name = bucket_names
         self.executable_adatrap = executable_adatrap
-        self.tmp_files_path = "tmp"
+        self.tmp_files_path = "../tmp"
 
     def send_log_message(self, message, error=False, general=False):
         """

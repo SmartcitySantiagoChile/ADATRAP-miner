@@ -29,7 +29,7 @@ class AWSSession:
         The ec2-keypair.pem file will be saved at root folder.
         """
         ec2 = self.session.resource("ec2")
-        with open(f"{os.path.join('tmp',name)}.pem", "w") as outfile:
+        with open(f"{os.path.join('../tmp', name)}.pem", "w") as outfile:
             key_pair = ec2.create_key_pair(KeyName=name)
             key_pair_out = str(key_pair.key_material)
             outfile.write(key_pair_out)
@@ -72,7 +72,7 @@ class AWSSession:
         Read a .env file and add \n at start
         :return: .env file with \n at start
         """
-        path = ".env"  # TODO: improve this
+        path = "../.env"
         with open(path) as f:
             lines = "\n" + f.read()
         return lines

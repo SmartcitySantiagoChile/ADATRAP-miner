@@ -1,14 +1,14 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='adatrap_miner',
     version='0.1',
-    py_modules=['adatrap_miner'],
+    packages=find_packages(),
+    include_package_data=True,
     install_requires=[
         'Click',
     ],
-    entry_points='''
-        [console_scripts]
-        adatrap_miner=adatrap_miner:cli
-    ''',
+    entry_points={
+        'console_scripts': [
+            "adatrap_miner = adatrap_miner.adatrap_miner:cli "]}
 )

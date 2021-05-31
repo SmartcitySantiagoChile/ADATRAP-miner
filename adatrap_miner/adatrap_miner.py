@@ -7,8 +7,8 @@ import click
 from decouple import UndefinedValueError
 from decouple import config
 
-import aws
-import windows_manager
+from adatrap_miner import aws
+from adatrap_miner import windows_manager
 
 
 def check_env_variables():
@@ -214,8 +214,8 @@ def execute_adatrap(context, date, debug):
 
     command_manager = windows_manager.WindowsManager(context["logger"], context['session'], general_log_stream,
                                                      config_file_replacements,
-                                                     os.path.join("tmp", config_file_adatrap), data_path, data_buckets, bucket_names,
-                                                     os.path.join("tmp", executable_adatrap), debug)
+                                                     os.path.join("../tmp", config_file_adatrap), data_path, data_buckets, bucket_names,
+                                                     os.path.join("../tmp", executable_adatrap), debug)
 
     # Initial Log
     command_manager.send_log_message("Instancia inicializada.")
