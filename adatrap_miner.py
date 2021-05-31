@@ -252,7 +252,8 @@ def execute_adatrap(context, date, debug):
         command_manager.send_log_message(f"Proceso ADATRAP para la instancia {command_manager.instance_id} finalizado.",
                                          general=True)
     if stderr:
-        command_manager.send_log_message(stderr, general=True)
         command_manager.send_log_message(f"Proceso ADATRAP para la instancia {command_manager.instance_id} finalizado con errores.",
                                          general=True, error=True)
-    command_manager.stop_instance()
+        command_manager.send_log_message(stderr, general=True, error=True)
+
+command_manager.stop_instance()
