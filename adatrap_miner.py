@@ -199,8 +199,8 @@ def execute_adatrap(context, date, debug):
     context = context.obj
     data_path: str = "ADATRAP"
     general_log_stream: str = context["general_log_stream"]
-    executable_adatrap: str = os.path.join("tmp", f"pvmtsc_v{config('EXECUTABLE_VERSION')}.exe")
-    config_file_adatrap: str = os.path.join("tmp", f"pvmtsc_v{config('EXECUTABLE_VERSION')}.par")
+    executable_adatrap: str = f"pvmtsc_v{config('EXECUTABLE_VERSION')}.exe"
+    config_file_adatrap: str = f"pvmtsc_v{config('EXECUTABLE_VERSION')}.par"
     config_file_replacements: dict = {
         '{po_path}': 'op_path_replacement',
         '{service_detail_file}': 'service_detail',
@@ -214,8 +214,8 @@ def execute_adatrap(context, date, debug):
 
     command_manager = windows_manager.WindowsManager(context["logger"], context['session'], general_log_stream,
                                                      config_file_replacements,
-                                                     config_file_adatrap, data_path, data_buckets, bucket_names,
-                                                     executable_adatrap, debug)
+                                                     os.path.join("tmp", config_file_adatrap), data_path, data_buckets, bucket_names,
+                                                     os.path.join("tmp", executable_adatrap), debug)
 
     # Initial Log
     command_manager.send_log_message("Instancia inicializada.")
