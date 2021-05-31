@@ -1,4 +1,5 @@
 import datetime
+import os
 import time
 import urllib
 
@@ -28,7 +29,7 @@ class AWSSession:
         The ec2-keypair.pem file will be saved at root folder.
         """
         ec2 = self.session.resource("ec2")
-        with open(f"{name}.pem", "w") as outfile:
+        with open(f"{os.path.join('tmp',name)}.pem", "w") as outfile:
             key_pair = ec2.create_key_pair(KeyName=name)
             key_pair_out = str(key_pair.key_material)
             outfile.write(key_pair_out)
@@ -52,7 +53,7 @@ class AWSSession:
                 MinCount=1,
                 MaxCount=1,
                 InstanceType=config("INSTANCE_TYPE"),
-                KeyName=config("KEY_PAIR"),
+                KeyName=os.path.join('tmp', config("KEY_PAIR")),
                 UserData=script,
                 Monitoring={"Enabled": True},
             )
