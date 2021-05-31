@@ -41,8 +41,8 @@ Además para agregar el comando `adatrap_miner` a las variables de ambiente se d
 ### Creación de usuario AWS
 
 El funcionamiento del programa se requieren las credenciales de un usuario AWS con permisos **AmazonEC2FullAccess**,
-**AmazonS3FullAccess**, **AmazonS3FullAccess**, **CloudWatchAgentServerPolicy** y **CloudWatchAgentAdminPolicy**.
-Los siguientes pasos detallan como crear un usuario AWS con los permisos necesarios.
+**AmazonS3FullAccess**, **AmazonS3FullAccess**, **CloudWatchAgentServerPolicy** y **CloudWatchAgentAdminPolicy**. Los
+siguientes pasos detallan como crear un usuario AWS con los permisos necesarios.
 
 #### 1) Crear usuario
 
@@ -61,7 +61,9 @@ avanzar al siguiente paso haciendo click en el botón **Next: permissions**.
 #### 3) Permisos de Usuario
 
 En esta sección se darán los permisos de EC2, S3 y Cloudwatch al usuario. Para esto debe seleccionar la opción **Attach
-existing policies directly**. Posteriormente en el cuadro de búsqueda buscar **EC2Fullaccess** y marcar las casillas **AmazonEC2FullAccess**, **AmazonS3FullAccess**, **CloudWatchAgentAdminPolicy**, **CloudWatchAgentServerPolicy** y **AmazonSSMFullAccess**
+existing policies directly**. Posteriormente en el cuadro de búsqueda buscar **EC2Fullaccess** y marcar las casillas
+**AmazonEC2FullAccess**, **AmazonS3FullAccess**, **CloudWatchAgentAdminPolicy**, **CloudWatchAgentServerPolicy** y
+**AmazonSSMFullAccess**
 
 Finalmente se puede ir al siguiente paso **Next: Tags**.
 
@@ -69,7 +71,9 @@ Finalmente se puede ir al siguiente paso **Next: Tags**.
 
 ##### 4) Tags (Opcional)
 
-Opcionalmente se pueden añadir etiquetas para identificar o almacena datos referente al usuario. Ir al paso siguiente **Next Review**.
+Opcionalmente se pueden añadir etiquetas para identificar o almacena datos referente al usuario. Ir al paso siguiente
+**Next Review**.
+
 ![aws-paso-4](docs/img/4-add-tags.png)
 
 ##### 5) Review
@@ -137,8 +141,11 @@ siguiente formato:
     # Version de ejecutable ADATRAP
     EXECUTABLE_VERSION=
 
-### Imagen de Instancia 
-Para obtener el ID (AMI_ID) de la imagen a utilizar se debe buscar dentro de las disponibles para el usuario AWS. Por ejemplo, en este [link](https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#LaunchInstanceWizard:) se encuentra un listado de imagenes disponibles.
+### Imagen de Instancia
+
+Para obtener el ID (AMI_ID) de la imagen a utilizar se debe buscar dentro de las disponibles para el usuario AWS. Por
+ejemplo, en este [link](https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#LaunchInstanceWizard:) se
+encuentra un listado de imágenes disponibles.
 
 ### Creación de Key Pair
 
@@ -202,54 +209,67 @@ Finalmente también se debe agregar el nombre a la variable *GENERAL_LOG_STREAM*
 
 ## Buckets S3
 
-Para el funcionamiento del programa se requiere que las fuentes de datos se encuentren almacenada en buckets de S3. Estos datos son los siguientes:
+Para el funcionamiento del programa se requiere que las fuentes de datos se encuentren almacenada en buckets de S3.
+Estos datos son los siguientes:
 
 ### Diccionario de Servicios
 
-Estos datos se deben encontrar en el formato YYYY-MM-DD.po.zip, donde YYYY-MM-DD representa desde que día es válido el diccionario. Sus archivos internos deben estar en formato gz.
+Estos datos se deben encontrar en el formato YYYY-MM-DD.po.zip, donde YYYY-MM-DD representa desde que día es válido el
+diccionario. Sus archivos internos deben estar en formato gz.
 
-El nombre del bucket asociado a los diccionarios de servicio debe ingresarse como valor en la variable **OP_PROGRAM_BUCKET_NAME** del archivo .env
-
+El nombre del bucket asociado a los diccionarios de servicio debe ingresarse como valor en la variable
+**OP_PROGRAM_BUCKET_NAME** del archivo .env
 
 ### Datos gps
+
 Los datos de gps deben estar en formato YYYY-MM-DD.gps.gz donde YYYY-MM-DD representa el día donde el archivo es válido.
 
 Se debe almacenar el nombre del bucket en la variable **GPS_BUCKET_NAME** del archivo .env
 
 ### Datos 196
+
 Estos datos deben tener el formato YYYY-MM-DD.196.gz donde YYYY-MM-DD representa el día donde el archivo es válido.
 
 El nombre de este bucket se debe almacenar en la variable **FILE_196_BUCKET_NAME** del archivo .env
 
 ### Datos de transacciones
+
 Los datos se deben encontrar en formato YYYY-MM-DD.trx.gz donde YYYY-MM-DD representa el día donde el archivo es válido.
 
 El nombre del bucket se debe almacenar en la variable **TRANSACTION_BUCKET_NAME** en el archivo .env
 
 ### Datos de detalle de servicio
-Este archivo debe estar en formato Diccionario-DetalleServicioZP_YYYYMMDD_YYYYMMDD.csv.gz donde el primer el par YYYYMMDD representan desde que día hasta que día es válido el archivo.
 
-El nombre de este bucket se debe almacenar en la variable SERVICE_DETAIL_BUCKET_NAME  
+Este archivo debe estar en formato Diccionario-DetalleServicioZP_YYYYMMDD_YYYYMMDD.csv.gz donde el primer el par
+YYYYMMDD representan desde que día hasta que día es válido el archivo.
 
-### Archivos ejecutables 
+El nombre de este bucket se debe almacenar en la variable SERVICE_DETAIL_BUCKET_NAME
+
+### Archivos ejecutables
+
 #### ADATRAP
-El archivo ejecutable ADATRAP se debe encontrar en un bucket con el formato pvmtsc_vX.exe donde X es la versión del programa.
+
+El archivo ejecutable ADATRAP se debe encontrar en un bucket con el formato pvmtsc_vX.exe donde X es la versión del
+programa.
 
 #### Archivo de configuración de ADATRAP
-El archivo de configuración de ADATRAP se debe encontrar en el mismo bucket, con formato pvmtsc_vX.par donde X es la versión del archivo.
+
+El archivo de configuración de ADATRAP se debe encontrar en el mismo bucket, con formato pvmtsc_vX.par donde X es la
+versión del archivo.
 
 Ambas versiones de los archivos deben ser la misma para el correcto funcionamiento.
 
-Un ejemplo de un archivo configurable de configuración compatible con la versión 0.2 se encuentra [aquí](docs/pvmtsc_v0.2.par)
+Un ejemplo de un archivo configurable de configuración compatible con la versión 0.2 se
+encuentra [aquí](docs/pvmtsc_v0.2.par)
 
-El nombre del bucket se debe almacenar en la variable **EXECUTABLES_BUCKET** 
+El nombre del bucket se debe almacenar en la variable **EXECUTABLES_BUCKET**
 y la versión del ejecutable en la variable **EXECUTABLE_VERSION** del archivo .env
+
 ## Ejecución de tests
 
 Es recomendable ejecutar los tests del programa para verificar su correcto funcionamiento:
 
     python -m unittest
-
 
 ## Uso
 
@@ -258,14 +278,15 @@ Para ejecutar adatrap_miner se deben ejecutar el comando con la fecha en formato
     adatrap_miner create-ec2-instance 2021-04-22
 
 Si se crea la instancia correctamente se desplegará un mensaje como el siguiente:
-    
+
       adatrap_miner create-ec2-instance 2020-06-28
     > INFO:adatrap_miner:Creando instancia para el día 2020-06-28...
     > INFO:adatrap_miner:Instancia creada con id: i-074c9c8020b3e24d0 para el día 2020-06-28
     > INFO:adatrap_miner:Creando log stream para instancia i-074c9c8020b3e24d0...
     > INFO:adatrap_miner:Log Stream creado con nombre: i-074c9c8020b3e24d0
 
-Al ejecutarse el comando se creará una instancia EC2 con un id. También se creará un log stream en cloudwatch con nombre del id de la instancia creada.
+Al ejecutarse el comando se creará una instancia EC2 con un id. También se creará un log stream en cloudwatch con nombre
+del id de la instancia creada.
 
 Este id puede ser utilizado para detener la instancia manualmente u obtener los logs asociado a su funcionamiento.
 
@@ -280,11 +301,10 @@ Para detener una instancia EC2 se debe ejecutar
 Donde *ID* es el id de la instancia.
 
 Si la instancia existe se desplegará un mensaje como el siguiente:
-    
+
     adatrap_miner stop-ec2-instance i-01467ca70263c5b71
     > INFO:adatrap_miner:Finalizando instancia con id i-01467ca70263c5b71...
     > INFO:adatrap_miner:Instancia con id i-01467ca70263c5b71 finalizada.
-
 
 ### Obtener logs
 
@@ -294,9 +314,47 @@ Para obtener los logs asociados a un log stream se debe ejecutar
 
 Donde *LOGNAME* es el nombre del log stream.
 
-Si se quiere almacenar en un archivo se debe
-utilizar la variable -o
+Si se quiere almacenar en un archivo se debe utilizar la variable -o
 
     adatrap_miner get-log-stream LOGNAME -o OUTPUTNAME
 
+## Acceder a la máquina virtual
 
+El proceso de ejecución de ADATRAP levanta una máquina virtual con sistema operativo Windows, pueden haber situaciones
+donde sea necesario acceder a ella para revisar logs u otro archivo. Para realizar esta acción se deben ejecutar los
+siguientes pasos:
+
+- Ir a consola de ec2 instances de aws
+- Hacer click en el id de la instancia que se quiere inspeccionar
+- Una vez ubicado en el detalle de la instancia, presionar el botón "connect"
+- Seleccionar tab "RDP client"
+- Presionar botón "get password"
+- Presionar botón "browse" y seleccionar archivo .pem que se creó al momento de crear una llave para correr las
+  instancias (este debe coincidir con la llave asociada al momento de creación de la instancia)
+- Presionar botón "Decrypt Password", lo que entregará la contraseña requerida al momento de establecer la conexión
+- En este punto, la consola de AWS muestra los tres parámetros necesarios para conectar:
+    - Public DNS
+    - User name
+    - Password
+- Abrir windows remote client ("Conexión a escritorio remoto")
+- Descargar archivo de conexión con formato RDP
+- Abrir archivo rdp con windows remote client
+
+### Observaciones de la instancia
+
+- Los archivos del programa ADATRAP-miner se descargan en el disco `c:\\`
+- Los logs de la instalación de las dependencias son almacenados en la
+  ruta `\ProgramData\Amazon\EC2-Windows\Launch\Log\UserdataExecution.log`
+- El programa adatrap_miner está asociado a la versión de python del sistema, por lo que se puede ejecutar desde
+  cualquier consola o powershell
+- Para simular una ejecución del programa se puede usar la llamada `adatrap_miner execute-adatrap`. Si se agrega la
+  opción `-d` o `--debug` el programa realiza todos los pasos salvo la ejecución del programa adatrap
+
+### Permisos para conexión remota
+
+Es necesario que las instancias de ejecución tengan disponible el puerto 3389 para que la conexión remota sea exitosa,
+para esto es necesario modificar el security group usado en ellas, que es el security group por defecto (usualmente de
+nombre `default`). En la siguiente imagen se muestran los permisos que debe tener el security group en la
+sección `inbound rules`.
+
+![log-stream](docs/img/rdp-security-group.png)
