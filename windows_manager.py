@@ -86,7 +86,7 @@ class WindowsManager:
                 self.config_file_replacements['{po_date}'] = ''.join(
                     os.path.basename(self.config_file_replacements['{po_path}']).split('-'))
                 with zipfile.ZipFile(bucket_file, 'r') as zip_ref:
-                    self.send_log_message(f"Descomprimiendo archivo {bucket_file}...")
+                    self.send_log_message(f"Descomprimiendo archivo {os.path.basename(bucket_file)}...")
                     zip_ref.extractall(self.tmp_files_path)
                     folder = self.config_file_replacements['{po_path}']
                     sub_folders = [f.path for f in os.scandir(folder) if f.is_dir()]
@@ -101,7 +101,7 @@ class WindowsManager:
                                 shutil.copyfileobj(f_in, f_out)
 
             else:
-                self.send_log_message(f"Descomprimiendo archivo {bucket_file}...")
+                self.send_log_message(f"Descomprimiendo archivo {os.path.basename(bucket_file)}...")
                 csv_name = '.'.join(bucket_file.split('.')[:2])
                 with gzip.open(bucket_file, 'r') as f_in, open(csv_name, 'wb') as f_out:
                     shutil.copyfileobj(f_in, f_out)
