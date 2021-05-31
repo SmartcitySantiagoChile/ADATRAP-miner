@@ -60,7 +60,7 @@ class WindowsManager:
         :param bucket_file: file name
         :param bucket_name: bucket name
         """
-        self.send_log_message(f"Bucket encontrado con nombre {bucket_file}")
+        self.send_log_message(f"Archivo encontrado con nombre {bucket_file}")
         self.send_log_message(f"Descargando {bucket_file}...")
         try:
             if bucket_name in [config("EXECUTABLES_BUCKET")]:
@@ -71,6 +71,8 @@ class WindowsManager:
             self.send_log_message(f"{bucket_file} descargado")
         except ClientError as e:
             self.send_log_message(e, error=True)
+        except Exception as e:
+            self.send_log_message(e, error=True)
 
     def decompress_file_from_bucket(self, bucket_type, bucket_file):
         """
@@ -78,31 +80,35 @@ class WindowsManager:
         :param bucket_type: type name bucket
         :param bucket_file: bucket file name
         """
-        if bucket_type == "op":
-            self.config_file_replacements['{po_path}'] = bucket_file.split('.')[0]
-            self.config_file_replacements['{po_date}'] = ''.join(os.path.basename(self.config_file_replacements['{po_path}']).split('-'))
-            with zipfile.ZipFile(bucket_file, 'r') as zip_ref:
-                self.send_log_message(f"Descomprimiendo archivo {bucket_file}...")
-                zip_ref.extractall(self.tmp_files_path)
-                folder = self.config_file_replacements['{po_path}']
-                sub_folders = [f.path for f in os.scandir(folder) if f.is_dir()]
-                files = [f.path for f in os.scandir(folder) if not f.is_dir()]
-                for f in files:
-                    with gzip.open(f, 'r') as f_in, open('.'.join(f.split('.')[:2]), 'wb') as f_out:
-                        shutil.copyfileobj(f_in, f_out)
-                for sub in sub_folders:
-                    for f in os.listdir(sub):
-                        src = os.path.join(sub, f)
-                        with gzip.open(src, 'r') as f_in, open('.'.join(src.split('.')[:2]), 'wb') as f_out:
+        try:
+            if bucket_type == "op":
+                self.config_file_replacements['{po_path}'] = bucket_file.split('.')[0]
+                self.config_file_replacements['{po_date}'] = ''.join(
+                    os.path.basename(self.config_file_replacements['{po_path}']).split('-'))
+                with zipfile.ZipFile(bucket_file, 'r') as zip_ref:
+                    self.send_log_message(f"Descomprimiendo archivo {bucket_file}...")
+                    zip_ref.extractall(self.tmp_files_path)
+                    folder = self.config_file_replacements['{po_path}']
+                    sub_folders = [f.path for f in os.scandir(folder) if f.is_dir()]
+                    files = [f.path for f in os.scandir(folder) if not f.is_dir()]
+                    for f in files:
+                        with gzip.open(f, 'r') as f_in, open('.'.join(f.split('.')[:2]), 'wb') as f_out:
                             shutil.copyfileobj(f_in, f_out)
+                    for sub in sub_folders:
+                        for f in os.listdir(sub):
+                            src = os.path.join(sub, f)
+                            with gzip.open(src, 'r') as f_in, open('.'.join(src.split('.')[:2]), 'wb') as f_out:
+                                shutil.copyfileobj(f_in, f_out)
 
-        else:
-            self.send_log_message(f"Descomprimiendo archivo {bucket_file}...")
-            csv_name = '.'.join(bucket_file.split('.')[:2])
-            with gzip.open(bucket_file, 'r') as f_in, open(csv_name, 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
-            if bucket_type == "service_detail":
-                self.config_file_replacements['{service_detail_file}'] = csv_name
+            else:
+                self.send_log_message(f"Descomprimiendo archivo {bucket_file}...")
+                csv_name = '.'.join(bucket_file.split('.')[:2])
+                with gzip.open(bucket_file, 'r') as f_in, open(csv_name, 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+                if bucket_type == "service_detail":
+                    self.config_file_replacements['{service_detail_file}'] = csv_name
+        except Exception as e:
+            self.send_log_message(e, error=True)
 
     def download_and_decompress_data_bucket_files(self, date):
         """
@@ -143,12 +149,15 @@ class WindowsManager:
         """
         self.send_log_message(f"Generando {date}.par ...")
         self.config_file_replacements['{date}'] = date
-        with open(self.config_file_adatrap, "rt") as f:
-            lines = f.read()
-            for key, value in self.config_file_replacements.items():
-                lines = lines.replace(key, value)
-            with open(f"{date}.par", "wt") as f:
-                f.write(lines)
+        try:
+            with open(self.config_file_adatrap, "rt") as f:
+                lines = f.read()
+                for key, value in self.config_file_replacements.items():
+                    lines = lines.replace(key, value)
+                with open(f"{date}.par", "wt") as f:
+                    f.write(lines)
+        except Exception as e:
+            self.send_log_message(e, general=True, error=True)
         self.send_log_message(f"Archivo {date}.par creado")
 
     def run_adatrap(self, date):
@@ -182,17 +191,20 @@ class WindowsManager:
         folder_path = os.path.join(self.data_path, date)
         self.send_log_message("Comprimiendo datos...")
         zip_filename = f"{date}.zip"
-        with ZipFile(zip_filename, 'w') as zipObj:
-            # Iterate over all the files in directory
-            for folder_name, subfolders, filenames in os.walk(folder_path):
-                # except kmls, reportes, debug
-                exception_folders = ["kmls", "reportes", "debug"]
-                if not os.path.split(folder_name)[1] in exception_folders:
-                    for filename in filenames:
-                        # create complete filepath of file in directory
-                        file_path = os.path.join(folder_name, filename)
-                        # Add file to zip
-                        zipObj.write(file_path, basename(file_path))
+        try:
+            with ZipFile(zip_filename, 'w') as zipObj:
+                # Iterate over all the files in directory
+                for folder_name, subfolders, filenames in os.walk(folder_path):
+                    # except kmls, reportes, debug
+                    exception_folders = ["kmls", "reportes", "debug"]
+                    if not os.path.split(folder_name)[1] in exception_folders:
+                        for filename in filenames:
+                            # create complete filepath of file in directory
+                            file_path = os.path.join(folder_name, filename)
+                            # Add file to zip
+                            zipObj.write(file_path, basename(file_path))
+        except Exception as e:
+            self.send_log_message(e, general=True, error=True)
         self.send_log_message("Compresión de datos exitosa.")
 
     def upload_output_data_to_s3(self, output_file_name):

@@ -222,40 +222,37 @@ def execute_adatrap(context, date, debug):
     # Initialization of ADATRAP
     command_manager.send_log_message("Iniciando proceso ADATRAP...")
 
-    try:
-        # Download ADATRAP .exe
-        executable_bucket = config('EXECUTABLES_BUCKET')
-        command_manager.send_log_message("Buscando ejecutable ADATRAP...")
-        command_manager.download_file_from_bucket(executable_adatrap, executable_bucket)
 
-        # Download config file
-        command_manager.send_log_message("Buscando archivo de configuración ADATRAP...")
-        command_manager.download_file_from_bucket(config_file_adatrap, executable_bucket)
+    # Download ADATRAP .exe
+    executable_bucket = config('EXECUTABLES_BUCKET')
+    command_manager.send_log_message("Buscando ejecutable ADATRAP...")
+    command_manager.download_file_from_bucket(executable_adatrap, executable_bucket)
 
-        # Download bucket data files
-        command_manager.send_log_message("Iniciando descarga de datos para ADATRAP...")
-        command_manager.download_and_decompress_data_bucket_files(date)
+    # Download config file
+    command_manager.send_log_message("Buscando archivo de configuración ADATRAP...")
+    command_manager.download_file_from_bucket(config_file_adatrap, executable_bucket)
 
-        # Process config file
-        command_manager.parse_config_file(date)
+    # Download bucket data files
+    command_manager.send_log_message("Iniciando descarga de datos para ADATRAP...")
+    command_manager.download_and_decompress_data_bucket_files(date)
 
-        # Run ADATRAP
-        stdout, stderr = command_manager.run_adatrap(date)
-        if stdout:
-            # Compress output data
-            command_manager.compress_adatrap_data(date)
-            output_file_name = f"{date}.zip"
+    # Process config file
+    command_manager.parse_config_file(date)
 
-            # Upload to S3
-            command_manager.upload_output_data_to_s3(output_file_name)
-            command_manager.send_log_message(stdout, general=True)
-            command_manager.send_log_message(f"Proceso ADATRAP para la instancia {command_manager.instance_id} finalizado.",
-                                             general=True)
-        if stderr:
-            command_manager.send_log_message(stderr, general=True)
-            command_manager.send_log_message(f"Proceso ADATRAP para la instancia {command_manager.instance_id} finalizado con errores.",
-                                             general=True, error=True)
-    except Exception as e:
-        command_manager.send_log_message(e,
+    # Run ADATRAP
+    stdout, stderr = command_manager.run_adatrap(date)
+    if stdout:
+        # Compress output data
+        command_manager.compress_adatrap_data(date)
+        output_file_name = f"{date}.zip"
+
+        # Upload to S3
+        command_manager.upload_output_data_to_s3(output_file_name)
+        command_manager.send_log_message(stdout, general=True)
+        command_manager.send_log_message(f"Proceso ADATRAP para la instancia {command_manager.instance_id} finalizado.",
+                                         general=True)
+    if stderr:
+        command_manager.send_log_message(stderr, general=True)
+        command_manager.send_log_message(f"Proceso ADATRAP para la instancia {command_manager.instance_id} finalizado con errores.",
                                          general=True, error=True)
     command_manager.stop_instance()
