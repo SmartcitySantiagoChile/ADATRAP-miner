@@ -41,7 +41,7 @@ class AWSSession:
         """
         ec2 = self.session.client("ec2")
         env_file = self._read_env_file()
-        with open('windows_script') as f:
+        with open(os.path.join('adatrap_miner', 'windows_script')) as f:
             lines = f.read()
             lines = lines.replace('{EC2_DATE}', date).replace("{ENV_DATA}",
                                                               env_file).replace("{GROUP_NAME}",
@@ -72,7 +72,7 @@ class AWSSession:
         Read a .env file and add \n at start
         :return: .env file with \n at start
         """
-        path = "../.env"
+        path = ".env"
         with open(path) as f:
             lines = "\n" + f.read()
         return lines
